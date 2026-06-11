@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PartySpace - Login</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+
+<body class="bg-gray-50 flex items-center justify-center min-h-screen font-sans">
+
+    <div class="relative border-2 border-black rounded-3xl p-12 bg-white w-full max-w-md text-center shadow-sm mx-4">
+
+        <div class="absolute top-6 left-6">
+            <a href="{% url 'tela_inicial' %}"
+                class="inline-block py-1 px-4 border-2 border-black rounded-xl text-sm font-medium text-gray-900 hover:bg-gray-100 transition duration-200">
+                Voltar
+            </a>
+        </div>
+
+        <h1 class="text-4xl font-bold mb-8 mt-4 tracking-wide text-gray-800">PartySpace</h1>
+
+        <form method="POST" class="text-left">
+            {% csrf_token %} <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2 pl-2">Nome:</label>
+                <input type="text" name="username" required
+                    class="w-full px-4 py-3 border-2 border-black rounded-2xl focus:outline-none focus:ring-2 focus:ring-gray-400">
+            </div>
+
+            <div class="mb-8">
+                <label class="block text-gray-700 text-sm font-bold mb-2 pl-2">Senha:</label>
+                <input type="password" name="password" required
+                    class="w-full px-4 py-3 border-2 border-black rounded-2xl focus:outline-none focus:ring-2 focus:ring-gray-400">
+            </div>
+
+            <div class="flex justify-center">
+                <button type="submit"
+                    class="w-1/2 py-2 px-6 border-2 border-black rounded-xl text-lg font-medium text-gray-900 hover:bg-gray-100 transition duration-200">
+                    Entrar
+                </button>
+            </div>
+        </form>
+
+    </div>
+
+</body>
+
+</html>
