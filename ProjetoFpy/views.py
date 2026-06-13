@@ -7,6 +7,9 @@ def tela_inicial(request):
 def login_view(request):
     return render(request, 'login.html') 
 
+def descricao_view(request):
+    return render(request, 'descricao.html')
+
 def cadastro_view(request):
     if request.method == 'POST':
         nome = request.POST.get('nome')

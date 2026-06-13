@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PartySpace - Descricao</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+
+<body class="min-h-screen bg-zinc-100 px-4 py-8 font-sans text-zinc-950">
+
+    <main class="relative mx-auto flex min-h-[760px] w-full max-w-3xl flex-col rounded-[28px] border-2 border-black bg-white px-8 py-6 shadow-sm sm:px-12">
+        <a href="{% url 'tela_inicial' %}"
+            class="absolute left-6 top-6 rounded-lg border-2 border-black px-6 py-1 text-base font-medium transition hover:bg-zinc-100">
+            Voltar
+        </a>
+
+        <section class="mx-auto flex w-full max-w-md flex-1 flex-col items-center pt-14">
+            <h1 class="mb-9 text-center text-4xl font-bold tracking-wide sm:text-5xl">PartySpace</h1>
+
+            <div class="mb-8 flex h-56 w-full max-w-md items-center justify-center rounded-3xl border-2 border-black">
+                <div class="relative h-28 w-36 rounded-xl bg-black">
+                    <div class="absolute right-6 top-5 h-7 w-7 rounded-full bg-white"></div>
+                    <div class="absolute bottom-5 left-5 h-0 w-0 border-b-[58px] border-l-[36px] border-r-[36px] border-b-white border-l-transparent border-r-transparent"></div>
+                    <div class="absolute bottom-5 right-5 h-0 w-0 border-b-[42px] border-l-[30px] border-r-[30px] border-b-white border-l-transparent border-r-transparent"></div>
+                </div>
+            </div>
+
+            <div class="mb-auto w-full rounded-2xl border-2 border-black px-6 py-4 text-base font-medium">
+                <p>Descricao</p>
+                <p>Ex: 1 salao, 1 banheiro, ...</p>
+            </div>
+
+            <a href="#"
+                class="mb-20 rounded-xl border-2 border-black px-8 py-3 text-base font-medium transition hover:bg-zinc-100">
+                Verificar Disponibilidade
+            </a>
+        </section>
+    </main>
+
+</body>
+
+</html>
