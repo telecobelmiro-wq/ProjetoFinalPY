@@ -11,6 +11,7 @@ urlpatterns = [
     # Rota da Página de Login (Ex: http://127.0.0.1:8000/login/)
     path('login/', views.login_view, name='login'),
     path('descricao/', views.descricao_view, name='descricao'),
+    path('disponibilidade/', views.disponibilidade_view, name='disponibilidade'),
     
     # Rota da Página de Cadastro (Ex: http://127.0.0.1:8000/cadastro/)
     path('cadastro/', views.cadastro_view, name='cadastro'),
