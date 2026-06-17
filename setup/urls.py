@@ -4,15 +4,11 @@ from ProjetoFpy import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    
-    # Rota da Página Inicial (Ex: http://127.0.0.1:8000/)
     path('', views.tela_inicial, name='tela_inicial'),
-    
-    # Rota da Página de Login (Ex: http://127.0.0.1:8000/login/)
+    path('painel-admin/', views.painel_admin, name='painel_admin'),
     path('login/', views.login_view, name='login'),
+    path('sair/', views.sair_view, name='sair'),
     path('descricao/', views.descricao_view, name='descricao'),
     path('disponibilidade/', views.disponibilidade_view, name='disponibilidade'),
-    
-    # Rota da Página de Cadastro (Ex: http://127.0.0.1:8000/cadastro/)
     path('cadastro/', views.cadastro_view, name='cadastro'),
 ]

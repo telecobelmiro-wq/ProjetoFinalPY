@@ -8,47 +8,37 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-
 <body class="bg-gray-100 min-h-screen p-5">
 
-    <main class="bg-white border border-black rounded-xl max-w-3xl mx-auto p-8 min-h-[700px] relative">
-
+    <main class="bg-white border border-black rounded-xl max-w-3xl mx-auto p-8 min-h-[700px]">
 
         <a href="{% url 'tela_inicial' %}" class="border border-black rounded-md px-5 py-2 text-sm hover:bg-gray-100">
             Voltar
         </a>
 
-
-        <section class="max-w-md mx-auto mt-10 flex flex-col items-center">
-
-
+        <div class="max-w-md mx-auto mt-10 flex flex-col items-center">
             <h1 class="text-4xl font-bold mb-8">
                 PartySpace
             </h1>
-
 
             <div class="w-full h-56 border border-black rounded-xl flex items-center justify-center mb-8">
 
                 <div class="bg-black w-36 h-28 rounded-lg relative">
 
-                    <div class="bg-white w-7 h-7 rounded-full absolute right-5 top-5"></div>
-
+                    <div class="bg-white w-7 h-7 rounded-full absolute right-5 top-5">
+                    </div>
 
                     <div class="absolute bottom-5 left-5 
                     border-l-[35px] border-r-[35px] border-b-[55px]
                     border-l-transparent border-r-transparent border-b-white">
                     </div>
 
-
                     <div class="absolute bottom-5 right-5
                     border-l-[25px] border-r-[25px] border-b-[40px]
                     border-l-transparent border-r-transparent border-b-white">
                     </div>
-
                 </div>
-
             </div>
-
 
 
             <div class="border border-black rounded-xl w-full p-5 mb-10">
@@ -63,15 +53,12 @@
 
             </div>
 
-
-
             <a href="{% url 'disponibilidade' %}" class="border border-black rounded-lg px-8 py-3 hover:bg-gray-100">
+
                 Verificar Disponibilidade
+
             </a>
-
-
-        </section>
-
+        </div>
     </main>
 </body>
 

@@ -5,61 +5,67 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PartySpace - Login</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-5">
 
     <div class="bg-white border border-black rounded-xl w-full max-w-md p-8">
-        <div class="mt-10">
 
-            <h1 class="text-center text-4xl font-bold mb-8">
-                PartySpace
-            </h1>
+        <h1 class="text-center text-4xl font-bold mb-8">
+            PartySpace
+        </h1>
 
-            <form method="POST">
-
-                {% csrf_token %}
-
-                <div class="mb-5">
-                    <label class="block mb-2 font-medium">
-                        Nome:
-                    </label>
-
-                    <input type="text" name="username" required class="w-full h-12 border border-black rounded-lg px-4">
-                </div>
-
-
-                <div class="mb-5">
-                    <label class="block mb-2 font-medium">
-                        Senha:
-                    </label>
-
-                    <input type="password" name="password" required
-                        class="w-full h-12 border border-black rounded-lg px-4">
-                </div>
-
-
-                <div class="text-center mt-8">
-
-                    <button type="submit" class="border border-black rounded-md px-8 py-2 hover:bg-gray-100">
-                        Entrar
-                    </button>
-
-                    <p class="mt-4">
-                        <a href="{% url 'cadastro' %}" class="hover:underline">
-                            Cadastre-se
-                        </a>
-                    </p>
-
-                </div>
-
-            </form>
-
+        {% if messages %}
+        <div class="mb-5">
+            {% for message in messages %}
+            <div class="bg-red-100 border border-red-500 text-red-700 px-4 py-2 rounded-lg text-sm">
+                {{ message }}
+            </div>
+            {% endfor %}
         </div>
+        {% endif %}
 
+        <form method="POST">
+
+            {% csrf_token %}
+            <div class="mb-5">
+
+                <label class="block mb-2">
+                    Nome:
+                </label>
+
+                <input type="text" name="username" required class="w-full h-12 border border-black rounded-lg px-4">
+
+            </div>
+
+            <div class="mb-5">
+
+                <label class="block mb-2">
+                    Senha:
+                </label>
+
+                <input type="password" name="password" required class="w-full h-12 border border-black rounded-lg px-4">
+
+            </div>
+            <div class="text-center mt-8">
+
+                <button type="submit" class="border border-black rounded-md px-8 py-2 hover:bg-gray-100">
+                    Entrar
+                </button>
+
+
+                <p class="mt-4">
+
+                    <a href="{% url 'cadastro' %}" class="hover:underline">
+                        Cadastre-se
+                    </a>
+
+                </p>
+            </div>
+        </form>
     </div>
-
 </body>
 
 </html>
