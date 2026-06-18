@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="pt-br">
 
 <head>
@@ -22,9 +23,7 @@
             </h1>
 
             <a href="{% url 'login' %}" class="border border-black rounded-md px-4 py-2 text-sm hover:bg-gray-100">
-
                 {{ usuario_nome|default:"Nome do usuario" }}
-
             </a>
         </header>
 
@@ -33,23 +32,31 @@
                 Filtrar
             </label>
 
-            <input type="text" name="endereco" placeholder="Endereço"
+            <input type="text" name="endereco" placeholder="Endereco"
                 class="w-full h-10 border border-black rounded-md px-4">
 
         </div>
+
         <div class="space-y-4">
 
-            <a href="{% url 'descricao' %}"
-                class="block h-20 border border-black rounded-xl px-6 flex items-center hover:bg-gray-100">
-            </a>
+            {% for espaco in espacos %}
+            <a href="{% url 'descricao' %}?espaco={{ espaco.id }}"
+                class="border border-black rounded-xl p-3 flex items-center gap-4 hover:bg-gray-100">
 
-            <a href="{% url 'descricao' %}"
-                class="block h-20 border border-black rounded-xl px-6 flex items-center hover:bg-gray-100">
-            </a>
+                <img src="{% static espaco.imagem1 %}" alt="{{ espaco.nome }}" class="w-28 h-16 object-cover rounded-lg">
 
-            <a href="{% url 'descricao' %}"
-                class="block h-20 border border-black rounded-xl px-6 flex items-center hover:bg-gray-100">
+                <div>
+                    <p class="font-bold">
+                        {{ espaco.nome }}
+                    </p>
+
+                    <p class="text-sm">
+                        {{ espaco.endereco }}
+                    </p>
+                </div>
+
             </a>
+            {% endfor %}
 
         </div>
     </main>

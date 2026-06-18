@@ -19,3 +19,16 @@ class Aluguel(models.Model):
 
     def __str__(self):
         return f"Aluguel em {self.dia}"
+
+
+class Espaco(models.Model):
+    nome = models.CharField(max_length=100)
+    endereco = models.CharField(max_length=255)
+    descricao = models.TextField()
+    imagem1 = models.CharField(max_length=100)
+    imagem2 = models.CharField(max_length=100)
+    imagem3 = models.CharField(max_length=100)
+    criado_em = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.nome

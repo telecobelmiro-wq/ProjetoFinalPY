@@ -2,14 +2,43 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.hashers import check_password, make_password
 from django.db.models import Q
-from .models import Usuario, Aluguel
+from .models import Usuario, Aluguel, Espaco
+
+
+DESCRICAO_DUBAI = (
+    'Localizado em Santa Cruz do Sul, o Dubai Eventos oferece uma estrutura moderna e completa para receber eventos '
+    'de diferentes formatos e tamanhos. O espaco combina elegancia, conforto e funcionalidade, proporcionando o '
+    'ambiente perfeito para celebracoes inesqueciveis. Com atendimento personalizado e uma estrutura preparada para '
+    'receber seus convidados, o Dubai Eventos e a escolha ideal para quem busca qualidade e excelencia em cada ocasiao.'
+)
+
+
+def criar_espaco_padrao():
+    espaco, criado = Espaco.objects.get_or_create(
+        nome='Dubai Eventos',
+        defaults={
+            'endereco': 'R. Barao do Arroio Grande, 599 - Lot. Vila Nova, Santa Cruz do Sul - RS, 96835-213',
+            'descricao': DESCRICAO_DUBAI,
+            'imagem1': 'ProjetoFpy/img/dubaieventos.jpg',
+            'imagem2': 'ProjetoFpy/img/dubaiinterno.jpg',
+            'imagem3': 'ProjetoFpy/img/palcodubai.webp',
+        }
+    )
+
+    if not criado and espaco.descricao != DESCRICAO_DUBAI:
+        espaco.descricao = DESCRICAO_DUBAI
+        espaco.save()
 
 def tela_inicial(request):
     if request.session.get('admin_logado'):
         return redirect('painel_admin')
 
+    criar_espaco_padrao()
+    espacos = Espaco.objects.all()
+
     return render(request, 'home.html', {
-        'usuario_nome': request.session.get('usuario_nome')
+        'usuario_nome': request.session.get('usuario_nome'),
+        'espacos': espacos
     })
 
 
@@ -17,12 +46,31 @@ def painel_admin(request):
     if not request.session.get('admin_logado'):
         return redirect('login')
 
+    if request.method == 'POST':
+        nome = request.POST.get('nome')
+        endereco = request.POST.get('endereco')
+        descricao = request.POST.get('descricao')
+
+        Espaco.objects.create(
+            nome=nome,
+            endereco=endereco,
+            descricao=descricao,
+            imagem1='ProjetoFpy/img/dubaieventos.jpg',
+            imagem2='ProjetoFpy/img/dubaiinterno.jpg',
+            imagem3='ProjetoFpy/img/palcodubai.webp'
+        )
+
+        return redirect('painel_admin')
+
+    criar_espaco_padrao()
     usuarios = Usuario.objects.all()
     alugueis = Aluguel.objects.all()
+    espacos = Espaco.objects.all()
 
     return render(request, 'admin.html', {
         'usuarios': usuarios,
-        'alugueis': alugueis
+        'alugueis': alugueis,
+        'espacos': espacos
     })
 
 def login_view(request):
@@ -57,7 +105,16 @@ def sair_view(request):
 
 
 def descricao_view(request):
-    return render(request, 'descricao.html')
+    criar_espaco_padrao()
+    espaco_id = request.GET.get('espaco')
+    espaco = Espaco.objects.filter(id=espaco_id).first()
+
+    if not espaco:
+        espaco = Espaco.objects.first()
+
+    return render(request, 'descricao.html', {
+        'espaco': espaco
+    })
 
 
 def disponibilidade_view(request):
