@@ -1,11 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-br">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PartySpace - Admin</title>
-
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
@@ -14,156 +13,147 @@
     <main class="bg-white border border-black rounded-xl max-w-3xl mx-auto p-8 min-h-[680px]">
 
         <header class="flex justify-end items-center gap-4 mb-8">
-
-            <p class="text-sm">
-                Administrador
-            </p>
-
+            <p class="text-sm">Administrador</p>
             <a href="{% url 'sair' %}" class="border border-black rounded-md px-6 py-2 text-sm hover:bg-gray-100">
-                Login Cliente
+                Sair
             </a>
-
         </header>
 
-        <h1 class="text-center text-5xl font-bold mb-28">
-            PartySpace
-        </h1>
+        <h1 class="text-center text-5xl font-bold mb-14">PartySpace</h1>
 
-        <section class="max-w-md mx-auto space-y-9 mb-20">
+        {% if messages %}
+        <div class="mb-5 space-y-2">
+            {% for message in messages %}
+            <div class="border border-black rounded-lg px-4 py-2 text-sm {% if message.tags == 'success' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-700{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
 
-            <button type="button" id="btn-cadastrar" class="w-full border border-black rounded-xl py-6 text-2xl hover:bg-gray-100">
+        <section class="max-w-md mx-auto space-y-5 mb-12">
+            <button type="button" id="btn-cadastrar" class="w-full border border-black rounded-xl py-5 text-2xl hover:bg-gray-100">
                 Cadastrar Espaco
             </button>
 
             <button type="button" id="btn-reservados"
-                class="block w-full border border-black rounded-xl py-6 text-2xl text-center hover:bg-gray-100">
+                class="block w-full border border-black rounded-xl py-5 text-2xl text-center hover:bg-gray-100">
                 Espacos Reservados
             </button>
 
             <button type="button" id="btn-clientes"
-                class="block w-full border border-black rounded-xl py-6 text-2xl text-center hover:bg-gray-100">
-                CLIENTES
+                class="block w-full border border-black rounded-xl py-5 text-2xl text-center hover:bg-gray-100">
+                Clientes
             </button>
-
         </section>
 
         <section id="cadastro-espaco" class="hidden border border-black rounded-xl p-5 mb-6">
-
-            <h2 class="text-xl font-bold mb-4">
-                Cadastrar Espaco
-            </h2>
+            <h2 class="text-xl font-bold mb-4">Cadastrar Espaco</h2>
 
             <form method="POST" class="space-y-4">
                 {% csrf_token %}
-
-                <input type="text" name="nome" value="Dubai Eventos" required
+                <input type="text" name="nome" placeholder="Nome do espaco" required
                     class="w-full h-10 border border-black rounded-md px-4">
 
-                <input type="text" name="endereco"
-                    value="R. Barao do Arroio Grande, 599 - Lot. Vila Nova, Santa Cruz do Sul - RS, 96835-213"
-                    required class="w-full h-10 border border-black rounded-md px-4">
+                <input type="text" name="endereco" placeholder="Endereco" required
+                    class="w-full h-10 border border-black rounded-md px-4">
 
-                <textarea name="descricao" required class="w-full h-32 border border-black rounded-md px-4 py-2">Localizado em Santa Cruz do Sul, o Dubai Eventos oferece uma estrutura moderna e completa para receber eventos de diferentes formatos e tamanhos. O espaco combina elegancia, conforto e funcionalidade, proporcionando o ambiente perfeito para celebracoes inesqueciveis. Com atendimento personalizado e uma estrutura preparada para receber seus convidados, o Dubai Eventos e a escolha ideal para quem busca qualidade e excelencia em cada ocasiao.</textarea>
+                <textarea name="descricao" placeholder="Descricao do espaco" required
+                    class="w-full h-32 border border-black rounded-md px-4 py-2"></textarea>
 
                 <button type="submit" class="border border-black rounded-md px-8 py-2 hover:bg-gray-100">
                     Salvar
                 </button>
             </form>
 
-        </section>
-
-        <section id="espacos" class="hidden border border-black rounded-xl p-5 mb-6">
-
-            <h2 class="text-xl font-bold mb-4">
-                Espacos Cadastrados
-            </h2>
-
+            <h3 class="text-lg font-bold mt-8 mb-3">Espacos Cadastrados</h3>
             {% if espacos %}
             <div class="space-y-3">
                 {% for espaco in espacos %}
                 <div class="border border-black rounded-lg p-3">
-                    <p>Nome: {{ espaco.nome }}</p>
-                    <p>Endereco: {{ espaco.endereco }}</p>
+                    <p><strong>Nome:</strong> {{ espaco.nome }}</p>
+                    <p><strong>Endereco:</strong> {{ espaco.endereco }}</p>
                 </div>
                 {% endfor %}
             </div>
             {% else %}
             <p>Nenhum espaco cadastrado.</p>
             {% endif %}
-
         </section>
 
         <section id="reservados" class="hidden border border-black rounded-xl p-5 mb-6">
-
-            <h2 class="text-xl font-bold mb-4">
-                Espacos Reservados
-            </h2>
+            <h2 class="text-xl font-bold mb-4">Espacos Reservados</h2>
 
             {% if alugueis %}
             <div class="space-y-3">
                 {% for aluguel in alugueis %}
-                <div class="border border-black rounded-lg p-3">
-                    <p>Dia: {{ aluguel.dia }}</p>
-                    <p>Duracao: {{ aluguel.duracao }}</p>
-                    <p>Horarios: {{ aluguel.horarios }}</p>
+                <div class="border border-black rounded-lg p-4 flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
+                    <div>
+                        <p><strong>Espaco:</strong> {{ aluguel.espaco.nome }}</p>
+                        <p><strong>Cliente:</strong> {{ aluguel.usuario.nome }}</p>
+                        <p><strong>Dia:</strong> {{ aluguel.dia }}</p>
+                        <p><strong>Duracao:</strong> {{ aluguel.duracao }}</p>
+                        <p><strong>Horarios:</strong> {{ aluguel.horarios }}</p>
+                    </div>
+
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="acao" value="cancelar">
+                        <input type="hidden" name="aluguel_id" value="{{ aluguel.id }}">
+                        <button type="submit" class="border border-black rounded-md px-4 py-2 text-sm hover:bg-gray-100">
+                            Cancelar
+                        </button>
+                    </form>
                 </div>
                 {% endfor %}
             </div>
             {% else %}
             <p>Nenhum aluguel cadastrado.</p>
             {% endif %}
-
         </section>
 
         <section id="clientes" class="hidden border border-black rounded-xl p-5">
-
-            <h2 class="text-xl font-bold mb-4">
-                Clientes
-            </h2>
+            <h2 class="text-xl font-bold mb-4">Clientes</h2>
 
             {% if usuarios %}
             <div class="space-y-3">
                 {% for usuario in usuarios %}
                 <div class="border border-black rounded-lg p-3">
-                    <p>Nome: {{ usuario.nome }}</p>
-                    <p>CPF: {{ usuario.cpf }}</p>
+                    <p><strong>Nome:</strong> {{ usuario.nome }}</p>
+                    <p><strong>CPF:</strong> {{ usuario.cpf }}</p>
+                    <p><strong>Cadastrado em:</strong> {{ usuario.criado_em|date:"d/m/Y H:i" }}</p>
                 </div>
                 {% endfor %}
             </div>
             {% else %}
             <p>Nenhum usuario cadastrado.</p>
             {% endif %}
-
         </section>
 
     </main>
 
     <script>
-        let reservados = document.getElementById("reservados");
-        let clientes = document.getElementById("clientes");
-        let cadastroEspaco = document.getElementById("cadastro-espaco");
-        let espacos = document.getElementById("espacos");
+        let reservados = document.getElementById("reservados")
+        let clientes = document.getElementById("clientes")
+        let cadastroEspaco = document.getElementById("cadastro-espaco")
 
         document.getElementById("btn-reservados").addEventListener("click", function () {
-            reservados.classList.remove("hidden");
-            clientes.classList.add("hidden");
-            cadastroEspaco.classList.add("hidden");
-            espacos.classList.add("hidden");
-        });
+            reservados.classList.remove("hidden")
+            clientes.classList.add("hidden")
+            cadastroEspaco.classList.add("hidden")
+        })
 
         document.getElementById("btn-clientes").addEventListener("click", function () {
-            clientes.classList.remove("hidden");
-            reservados.classList.add("hidden");
-            cadastroEspaco.classList.add("hidden");
-            espacos.classList.add("hidden");
-        });
+            clientes.classList.remove("hidden")
+            reservados.classList.add("hidden")
+            cadastroEspaco.classList.add("hidden")
+        })
 
         document.getElementById("btn-cadastrar").addEventListener("click", function () {
-            cadastroEspaco.classList.remove("hidden");
-            espacos.classList.remove("hidden");
-            reservados.classList.add("hidden");
-            clientes.classList.add("hidden");
-        });
+            cadastroEspaco.classList.remove("hidden")
+            reservados.classList.add("hidden")
+            clientes.classList.add("hidden")
+        })
     </script>
 
 </body>

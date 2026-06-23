@@ -1,81 +1,100 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 {% block content %}
 {% load static %}
 
 <div class="bg-white border border-black rounded-xl max-w-3xl mx-auto p-8 min-h-[760px]">
-    <a href="{% url 'descricao' %}"
+    <a href="{% url 'descricao' %}?espaco={{ espaco.id }}"
         class="border border-black rounded-md px-5 py-2 text-sm hover:bg-gray-200">Voltar</a>
 
-    <div class="max-w-md mx-auto mt-12">
-        <div id="carouselExample" class="carousel slide">
-            <div class="carousel-inner">
+    <div class="max-w-md mx-auto mt-10">
+        <h1 class="text-center text-4xl font-bold mb-8">PartySpace</h1>
+
+        {% if messages %}
+        <div class="mb-5 space-y-2">
+            {% for message in messages %}
+            <div class="border border-black rounded-lg px-4 py-2 text-sm bg-red-100 text-red-700">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div id="carouselExample" class="carousel slide mb-6">
+            <div class="carousel-inner rounded-xl border border-black overflow-hidden">
                 <div class="carousel-item active">
-                    <img src="{% static espaco.imagem1 %}" alt="{{ espaco.nome }}" class="d-block w-100">
+                    <img src="{% static espaco.imagem1 %}" alt="{{ espaco.nome }}" class="d-block w-100 h-64 object-cover">
                 </div>
                 <div class="carousel-item">
-                    <img src="{% static espaco.imagem2 %}" alt="{{ espaco.nome }}" class="d-block w-100">
+                    <img src="{% static espaco.imagem2 %}" alt="{{ espaco.nome }}" class="d-block w-100 h-64 object-cover">
                 </div>
                 <div class="carousel-item">
-                    <img src="{% static espaco.imagem3 %}" alt="{{ espaco.nome }}" class="d-block w-100">
+                    <img src="{% static espaco.imagem3 %}" alt="{{ espaco.nome }}" class="d-block w-100 h-64 object-cover">
                 </div>
             </div>
             <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
+                <span class="visually-hidden">Anterior</span>
             </button>
             <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
+                <span class="visually-hidden">Proximo</span>
             </button>
         </div>
 
-        <p class="text-sm mb-3">Escolha o dia e a duração do evento</p>
+        <p class="font-bold mb-1">{{ espaco.nome }}</p>
+        <p class="text-sm mb-3">Escolha o dia, a duracao do evento e os horarios desejados.</p>
+
+        <form method="GET" class="border border-black rounded-xl p-4 mb-4">
+            <input type="hidden" name="espaco" value="{{ espaco.id }}">
+            <label class="block mb-2 text-sm">Consultar horarios por dia</label>
+            <div class="flex gap-3">
+                <input type="date" name="dia" value="{{ dia_selecionado }}" class="border border-black rounded px-3 h-10 w-full">
+                <button type="submit" class="border border-black rounded px-4 hover:bg-gray-100">Buscar</button>
+            </div>
+        </form>
 
         <div class="border border-black rounded-xl p-6">
             <form method="POST" id="form-alugar">
                 {% csrf_token %}
                 <input type="hidden" name="espaco_id" value="{{ espaco.id }}">
 
-                <div class="flex gap-4 items-center mb-6 text-sm">
-                    <label>Dia</label>
-                    <input type="text" name="dia" class="border border-black rounded px-2 w-24 h-7">
-                    <label>Duração</label>
-                    <input type="text" name="duracao" class="border border-black rounded px-2 w-24 h-7">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 text-sm">
+                    <div>
+                        <label class="block mb-1">Dia</label>
+                        <input type="date" name="dia" value="{{ dia_selecionado }}" required class="border border-black rounded px-2 w-full h-10">
+                    </div>
+                    <div>
+                        <label class="block mb-1">Duracao</label>
+                        <input type="text" name="duracao" placeholder="Ex: 4 horas" required class="border border-black rounded px-2 w-full h-10">
+                    </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-y-2 text-lg">
-                    <button type="button" class="horario text-left text-green-600" data-hora="1:00">1:00</button>
-                    <button type="button" class="horario text-left" data-hora="13:00">13:00</button>
-                    <button type="button" class="horario text-left text-green-600" data-hora="2:00">2:00</button>
-                    <button type="button" class="horario text-left" data-hora="14:00">14:00</button>
-                    <button type="button" class="horario text-left text-green-600" data-hora="3:00">3:00</button>
-                    <button type="button" class="horario text-left" data-hora="15:00">15:00</button>
-                    <button type="button" class="horario text-left text-green-600" data-hora="4:00">4:00</button>
-                    <button type="button" class="horario text-left" data-hora="16:00">16:00</button>
-                    <button type="button" class="horario text-left text-green-600" data-hora="5:00">5:00</button>
-                    <button type="button" class="horario text-left" data-hora="17:00">17:00</button>
-                    <button type="button" class="horario text-left text-green-600" data-hora="6:00">6:00</button>
-                    <button type="button" class="horario text-left" data-hora="18:00">18:00</button>
-                    <button type="button" class="horario text-left text-green-600" data-hora="7:00">7:00</button>
-                    <button type="button" class="horario text-left" data-hora="19:00">19:00</button>
-                    <button type="button" class="horario text-left text-red-600" data-hora="8:00">8:00</button>
-                    <button type="button" class="horario text-left" data-hora="20:00">20:00</button>
-                    <button type="button" class="horario text-left text-red-600" data-hora="9:00">9:00</button>
-                    <button type="button" class="horario text-left" data-hora="21:00">21:00</button>
-                    <button type="button" class="horario text-left text-red-600" data-hora="10:00">10:00</button>
-                    <button type="button" class="horario text-left" data-hora="22:00">22:00</button>
-                    <button type="button" class="horario text-left text-red-600" data-hora="11:00">11:00</button>
-                    <button type="button" class="horario text-left" data-hora="23:00">23:00</button>
-                    <button type="button" class="horario text-left text-red-600" data-hora="12:00">12:00</button>
-                    <button type="button" class="horario text-left" data-hora="00:00">00:00</button>
+                <div class="grid grid-cols-2 gap-2 text-lg">
+                    {% for hora in horarios %}
+                    {% if hora in ocupados %}
+                    <button type="button" disabled class="text-left text-red-600 line-through cursor-not-allowed" data-hora="{{ hora }}">
+                        {{ hora }} ocupado
+                    </button>
+                    {% else %}
+                    <button type="button" class="horario text-left text-green-700 rounded px-2 py-1 hover:bg-gray-100" data-hora="{{ hora }}">
+                        {{ hora }}
+                    </button>
+                    {% endif %}
+                    {% endfor %}
                 </div>
 
                 <input type="hidden" id="horarios" name="horarios">
             </form>
         </div>
 
+        <div class="flex justify-center gap-5 text-sm mt-4">
+            <span class="text-green-700">Disponivel</span>
+            <span class="text-red-600 line-through">Ocupado</span>
+            <span class="bg-gray-200 px-2 rounded">Selecionado</span>
+        </div>
+
         <button id="alugar" type="submit" form="form-alugar"
-            class="border border-black rounded-lg px-20 py-3 mt-10 text-sm hover:bg-gray-200 block mx-auto">
+            class="border border-black rounded-lg px-20 py-3 mt-8 text-sm hover:bg-gray-200 block mx-auto">
             ALUGAR
         </button>
     </div>

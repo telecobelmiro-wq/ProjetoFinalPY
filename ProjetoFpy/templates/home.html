@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 {% load static %}
 <html lang="pt-br">
 
@@ -13,41 +13,85 @@
 
     <main class="bg-white border border-black rounded-xl max-w-3xl mx-auto p-8">
 
-        <header class="flex justify-between items-center mb-8">
+        <header class="flex justify-between items-center mb-8 gap-4">
             <div></div>
-            <h1 class="text-4xl font-bold">PartySpace</h1>
+            <h1 class="text-4xl font-bold text-center">PartySpace</h1>
             <a href="{% url 'login' %}" class="border border-black rounded-md px-4 py-2 text-sm hover:bg-gray-100">
-                {{ usuario_nome|default:"Nome do usuario" }}
+                {{ usuario_nome|default:"Login" }}
             </a>
         </header>
 
+        {% if messages %}
+        <div class="mb-5 space-y-2">
+            {% for message in messages %}
+            <div class="border border-black rounded-lg px-4 py-2 text-sm {% if message.tags == 'success' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-700{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
         <div class="mb-8">
-            <label class="block mb-2">Filtrar</label>
-            <input id="filtro" type="text" placeholder="Endereco"
+            <label class="block mb-2">Filtrar por endereco</label>
+            <input id="filtro" type="text" placeholder="Digite um endereco"
                 class="w-full h-10 border border-black rounded-md px-4">
         </div>
 
-        <div class="space-y-4">
-            {% for espaco in espacos %}
-            <a href="{% url 'descricao' %}?espaco={{ espaco.id }}"
-                class="espaco-card border border-black rounded-xl p-3 flex items-center gap-4 hover:bg-gray-100"
-                data-end="{{ espaco.endereco|lower }}">
-                <img src="{% static espaco.imagem1 %}" alt="{{ espaco.nome }}"
-                    class="w-28 h-16 object-cover rounded-lg">
-                <div>
-                    <p class="font-bold">{{ espaco.nome }}</p>
-                    <p class="text-sm">{{ espaco.endereco }}</p>
-                    {% if espaco.id in alugados %}
-                    <span class="inline-block mt-1 text-xs px-3 py-1 rounded-md bg-orange-100 text-orange-800">🔒
-                        Alugado por você</span>
-                    {% else %}
-                    <span class="inline-block mt-1 text-xs px-3 py-1 rounded-md bg-green-100 text-green-800">✅
-                        Disponível</span>
-                    {% endif %}
+        <section>
+            <h2 class="text-2xl font-bold mb-4">Espacos disponiveis</h2>
+
+            <div class="space-y-4">
+                {% for espaco in espacos %}
+                <a href="{% url 'descricao' %}?espaco={{ espaco.id }}"
+                    class="espaco-card border border-black rounded-xl p-3 flex items-center gap-4 hover:bg-gray-100"
+                    data-end="{{ espaco.endereco|lower }}">
+                    <img src="{% static espaco.imagem1 %}" alt="{{ espaco.nome }}"
+                        class="w-28 h-16 object-cover rounded-lg">
+                    <div>
+                        <p class="font-bold">{{ espaco.nome }}</p>
+                        <p class="text-sm">{{ espaco.endereco }}</p>
+                        {% if espaco.id in alugados %}
+                        <span class="inline-block mt-1 text-xs px-3 py-1 rounded-md bg-orange-100 text-orange-800">
+                            Alugado por voce
+                        </span>
+                        {% else %}
+                        <span class="inline-block mt-1 text-xs px-3 py-1 rounded-md bg-green-100 text-green-800">
+                            Disponivel
+                        </span>
+                        {% endif %}
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </section>
+
+        {% if usuario_nome %}
+        <section class="mt-10 border border-black rounded-xl p-5">
+            <h2 class="text-2xl font-bold mb-4">Minhas reservas</h2>
+
+            {% if meus_alugueis %}
+            <div class="space-y-3">
+                {% for aluguel in meus_alugueis %}
+                <div class="border border-black rounded-lg p-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <p class="font-bold">{{ aluguel.espaco.nome }}</p>
+                        <p class="text-sm">Dia: {{ aluguel.dia }}</p>
+                        <p class="text-sm">Duracao: {{ aluguel.duracao }}</p>
+                        <p class="text-sm">Horarios: {{ aluguel.horarios }}</p>
+                    </div>
+
+                    <a href="{% url 'cancelar_aluguel' aluguel.id %}"
+                        class="border border-black rounded-md px-4 py-2 text-sm text-center hover:bg-gray-100">
+                        Cancelar
+                    </a>
                 </div>
-            </a>
-            {% endfor %}
-        </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-sm">Voce ainda nao possui reservas cadastradas.</p>
+            {% endif %}
+        </section>
+        {% endif %}
 
     </main>
 

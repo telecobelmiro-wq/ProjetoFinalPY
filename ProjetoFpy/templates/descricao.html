@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 {% block content %}
 {% load static %}
 
@@ -9,67 +9,44 @@
     </a>
 
     <div class="max-w-md mx-auto mt-10 flex flex-col items-center">
-        <h1 class="text-4xl font-bold mb-8">
-            PartySpace
-        </h1>
+        <h1 class="text-4xl font-bold mb-8">PartySpace</h1>
 
         <div class="w-full mb-8">
-
             <div id="carouselExample" class="carousel slide">
-                <div class="carousel-inner">
+                <div class="carousel-inner rounded-xl border border-black overflow-hidden">
                     <div class="carousel-item active">
-                        <img src="{% static espaco.imagem1 %}" alt="{{ espaco.nome }}" class="d-block w-100" alt="...">
+                        <img src="{% static espaco.imagem1 %}" alt="{{ espaco.nome }}" class="d-block w-100 h-72 object-cover">
                     </div>
                     <div class="carousel-item">
-                        <img src="{% static espaco.imagem2 %}" alt="{{ espaco.nome }}" class="d-block w-100" alt="...">
+                        <img src="{% static espaco.imagem2 %}" alt="{{ espaco.nome }}" class="d-block w-100 h-72 object-cover">
                     </div>
                     <div class="carousel-item">
-                        <img src="{% static espaco.imagem3 %}" alt="{{ espaco.nome }}" class="d-block w-100" alt="...">
+                        <img src="{% static espaco.imagem3 %}" alt="{{ espaco.nome }}" class="d-block w-100 h-72 object-cover">
                     </div>
                 </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample"
-                    data-bs-slide="prev">
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Previous</span>
+                    <span class="visually-hidden">Anterior</span>
                 </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#carouselExample"
-                    data-bs-slide="next">
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Next</span>
+                    <span class="visually-hidden">Proximo</span>
                 </button>
             </div>
+        </div>
 
+        <div class="border border-black rounded-xl w-full p-5 mb-6">
+            <p class="font-medium">Descricao</p>
+            <p class="mt-2 font-bold">{{ espaco.nome }}</p>
+            <p class="mt-2">{{ espaco.descricao }}</p>
         </div>
 
         <div class="border border-black rounded-xl w-full p-5 mb-10">
-
-            <p class="font-medium">
-                Descrição
-            </p>
-
-            <p class="mt-2 font-bold">
-                {{ espaco.nome }}
-            </p>
-
-            <p class="mt-2">
-                {{ espaco.descricao }}
-            </p>
-
+            <p class="font-medium">Localizacao</p>
+            <p class="mt-2">{{ espaco.endereco }}</p>
         </div>
 
-        <div class="border border-black rounded-xl w-full p-5 mb-10">
-
-            <p class="font-medium">
-                Localização
-            </p>
-
-            <p class="mt-2">
-                {{ espaco.endereco }}
-            </p>
-
-        </div>
-
-        <a href="{% url 'disponibilidade' %}" class="border border-black rounded-lg px-8 py-3 hover:bg-gray-100">
+        <a href="{% url 'disponibilidade' %}?espaco={{ espaco.id }}" class="border border-black rounded-lg px-8 py-3 hover:bg-gray-100">
             Verificar Disponibilidade
         </a>
     </div>

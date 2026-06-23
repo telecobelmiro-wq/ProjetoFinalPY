@@ -5,6 +5,14 @@ from django.db.models import Q
 from .models import Usuario, Aluguel, Espaco
 
 
+HORARIOS = [
+    '1:00', '2:00', '3:00', '4:00', '5:00', '6:00',
+    '7:00', '8:00', '9:00', '10:00', '11:00', '12:00',
+    '13:00', '14:00', '15:00', '16:00', '17:00', '18:00',
+    '19:00', '20:00', '21:00', '22:00', '23:00', '00:00',
+]
+
+
 desc_dubai = (
     'Localizado em Santa Cruz do Sul, o Dubai Eventos oferece uma estrutura moderna e completa para receber eventos '
     'de diferentes formatos e tamanhos. O espaco combina elegancia, conforto e funcionalidade, proporcionando o '
@@ -38,15 +46,18 @@ def tela_inicial(request):
     nome = request.session.get('usuario_nome')
 
     alugados = set()
+    meus_alugueis = []
     if nome:
         u = Usuario.objects.filter(nome=nome).first()
         if u:
-            alugados = set(Aluguel.objects.filter(usuario=u).values_list('espaco_id', flat=True))
+            meus_alugueis = Aluguel.objects.filter(usuario=u).select_related('espaco').order_by('-criado_em')
+            alugados = set(meus_alugueis.values_list('espaco_id', flat=True))
 
     return render(request, 'home.html', {
         'usuario_nome': nome,
         'espacos': espacos,
         'alugados': alugados,
+        'meus_alugueis': meus_alugueis,
     })
 
 
@@ -55,6 +66,11 @@ def painel_admin(request):
         return redirect('login')
 
     if request.method == 'POST':
+        if request.POST.get('acao') == 'cancelar':
+            Aluguel.objects.filter(id=request.POST.get('aluguel_id')).delete()
+            messages.success(request, 'Reserva cancelada com sucesso.')
+            return redirect('painel_admin')
+
         Espaco.objects.create(
             nome=request.POST.get('nome'),
             endereco=request.POST.get('endereco'),
@@ -68,7 +84,7 @@ def painel_admin(request):
     cria_espaco()
     return render(request, 'admin.html', {
         'usuarios': Usuario.objects.all(),
-        'alugueis': Aluguel.objects.all(),
+        'alugueis': Aluguel.objects.select_related('usuario', 'espaco').all().order_by('-criado_em'),
         'espacos': Espaco.objects.all()
     })
 
@@ -110,25 +126,90 @@ def descricao_view(request):
     return render(request, 'descricao.html', {'espaco': espaco})
 
 
+def pega_horarios_ocupados(espaco, dia):
+    ocupados = []
+    alugueis = Aluguel.objects.filter(espaco=espaco, dia=dia)
+
+    for aluguel in alugueis:
+        for hora in aluguel.horarios.split(','):
+            hora = hora.strip()
+            if hora and hora not in ocupados:
+                ocupados.append(hora)
+
+    return ocupados
+
+
 def disponibilidade_view(request):
+    if not request.session.get('usuario_nome'):
+        messages.error(request, 'Faça login para reservar um espaço.')
+        return redirect('login')
+
     if request.method == 'POST':
         u = Usuario.objects.filter(nome=request.session.get('usuario_nome')).first()
         espaco = Espaco.objects.filter(id=request.POST.get('espaco_id')).first()
+        dia = request.POST.get('dia', '').strip()
+        duracao = request.POST.get('duracao', '').strip()
+        horarios = request.POST.get('horarios', '').strip()
+        horarios_lista = [h for h in horarios.split(',') if h]
+
+        if not u or not espaco:
+            messages.error(request, 'Não foi possível encontrar o usuário ou o espaço.')
+            return redirect('tela_inicial')
+
+        if not dia or not duracao or not horarios_lista:
+            messages.error(request, 'Preencha o dia, a duração e escolha pelo menos um horário.')
+            return redirect(f'/disponibilidade/?espaco={espaco.id}')
+
+        ocupados = pega_horarios_ocupados(espaco, dia)
+        conflito = [hora for hora in horarios_lista if hora in ocupados]
+
+        if conflito:
+            messages.error(request, 'Este horário já está reservado: ' + ', '.join(conflito))
+            return redirect(f'/disponibilidade/?espaco={espaco.id}&dia={dia}')
 
         Aluguel.objects.create(
-            dia=request.POST.get('dia'),
-            duracao=request.POST.get('duracao'),
-            horarios=request.POST.get('horarios'),
+            dia=dia,
+            duracao=duracao,
+            horarios=horarios,
             usuario=u,
             espaco=espaco,
         )
+        messages.success(request, 'Reserva criada com sucesso.')
         return redirect('tela_inicial')
 
     espaco_id = request.GET.get('espaco')
+    dia = request.GET.get('dia', '')
     espaco = Espaco.objects.filter(id=espaco_id).first()
     if not espaco:
         espaco = Espaco.objects.first()
-    return render(request, 'disponibilidade.html', {'espaco': espaco})
+    ocupados = pega_horarios_ocupados(espaco, dia) if dia else []
+    return render(request, 'disponibilidade.html', {
+        'espaco': espaco,
+        'horarios': HORARIOS,
+        'ocupados': ocupados,
+        'dia_selecionado': dia,
+    })
+
+
+def cancelar_aluguel_view(request, aluguel_id):
+    aluguel = Aluguel.objects.filter(id=aluguel_id).select_related('usuario').first()
+
+    if not aluguel:
+        messages.error(request, 'Reserva não encontrada.')
+        return redirect('tela_inicial')
+
+    usuario_nome = request.session.get('usuario_nome')
+    admin_logado = request.session.get('admin_logado')
+
+    if admin_logado or (aluguel.usuario and aluguel.usuario.nome == usuario_nome):
+        aluguel.delete()
+        messages.success(request, 'Reserva cancelada com sucesso.')
+    else:
+        messages.error(request, 'Você não tem permissão para cancelar esta reserva.')
+
+    if admin_logado:
+        return redirect('painel_admin')
+    return redirect('tela_inicial')
 
 
 def cadastro_view(request):
