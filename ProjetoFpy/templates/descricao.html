@@ -1,83 +1,77 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
+{% block content %}
 {% load static %}
-<html lang="pt-br">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PartySpace - Descricao</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
+<main class="bg-white border border-black rounded-xl max-w-3xl mx-auto p-8 min-h-[700px]">
 
-<body class="bg-gray-100 min-h-screen p-5">
+    <a href="{% url 'tela_inicial' %}" class="border border-black rounded-md px-5 py-2 text-sm hover:bg-gray-100">
+        Voltar
+    </a>
 
-    <main class="bg-white border border-black rounded-xl max-w-3xl mx-auto p-8 min-h-[700px]">
+    <div class="max-w-md mx-auto mt-10 flex flex-col items-center">
+        <h1 class="text-4xl font-bold mb-8">
+            PartySpace
+        </h1>
 
-        <a href="{% url 'tela_inicial' %}" class="border border-black rounded-md px-5 py-2 text-sm hover:bg-gray-100">
-            Voltar
-        </a>
+        <div class="w-full mb-8">
 
-        <div class="max-w-md mx-auto mt-10 flex flex-col items-center">
-            <h1 class="text-4xl font-bold mb-8">
-                PartySpace
-            </h1>
-
-            <div class="w-full mb-8">
-
-                <div class="border border-black rounded-xl overflow-hidden">
-                    <button type="button" id="abrir-imagem" class="block w-full">
-                        <img id="imagem-principal" src="{% static espaco.imagem1 %}" alt="{{ espaco.nome }}"
-                            class="w-full h-64 object-cover">
-                    </button>
+            <div id="carouselExample" class="carousel slide">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <img src="{% static espaco.imagem1 %}" alt="{{ espaco.nome }}" class="d-block w-100" alt="...">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="{% static espaco.imagem2 %}" alt="{{ espaco.nome }}" class="d-block w-100" alt="...">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="{% static espaco.imagem3 %}" alt="{{ espaco.nome }}" class="d-block w-100" alt="...">
+                    </div>
                 </div>
-
-                <div class="flex justify-between mt-4">
-                    <button type="button" id="voltar-imagem"
-                        class="border border-black rounded-md px-5 py-2 text-sm hover:bg-gray-100">
-                        Anterior
-                    </button>
-
-                    <button type="button" id="proxima-imagem"
-                        class="border border-black rounded-md px-5 py-2 text-sm hover:bg-gray-100">
-                        Proximo
-                    </button>
-                </div>
-
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample"
+                    data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExample"
+                    data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
             </div>
 
-            <div class="border border-black rounded-xl w-full p-5 mb-10">
-
-                <p class="font-medium">
-                    Descrição
-                </p>
-
-                <p class="mt-2 font-bold">
-                    {{ espaco.nome }}
-                </p>
-
-                <p class="mt-2">
-                    {{ espaco.descricao }}
-                </p>
-
-            </div>
-
-            <div class="border border-black rounded-xl w-full p-5 mb-10">
-
-                <p class="font-medium">
-                    Localização
-                </p>
-
-                <p class="mt-2">
-                    {{ espaco.endereco }}
-                </p>
-
-            </div>
-
-            <a href="{% url 'disponibilidade' %}" class="border border-black rounded-lg px-8 py-3 hover:bg-gray-100">
-                Verificar Disponibilidade
-            </a>
         </div>
-    </main>
-</body>
 
-</html>
+        <div class="border border-black rounded-xl w-full p-5 mb-10">
+
+            <p class="font-medium">
+                Descrição
+            </p>
+
+            <p class="mt-2 font-bold">
+                {{ espaco.nome }}
+            </p>
+
+            <p class="mt-2">
+                {{ espaco.descricao }}
+            </p>
+
+        </div>
+
+        <div class="border border-black rounded-xl w-full p-5 mb-10">
+
+            <p class="font-medium">
+                Localização
+            </p>
+
+            <p class="mt-2">
+                {{ espaco.endereco }}
+            </p>
+
+        </div>
+
+        <a href="{% url 'disponibilidade' %}" class="border border-black rounded-lg px-8 py-3 hover:bg-gray-100">
+            Verificar Disponibilidade
+        </a>
+    </div>
+</main>
+{% endblock %}
