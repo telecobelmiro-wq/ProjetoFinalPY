@@ -8,72 +8,58 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-gray-100 min-h-screen flex items-center justify-center p-5">
+<body class="flex min-h-screen items-center justify-center bg-slate-100 p-5 text-slate-900">
 
-    <div class="bg-white border border-black rounded-xl w-full max-w-md p-8">
+    <main class="w-full max-w-md rounded-lg border border-slate-200 bg-white p-8 shadow-sm">
 
-        <a href="{% url 'tela_inicial' %}" class="border border-black rounded-md px-4 py-2 text-sm hover:bg-gray-100">
+        <a href="{% url 'login' %}" class="inline-flex rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-50">
             Voltar
         </a>
 
-        <h1 class="text-center text-4xl font-bold mt-8 mb-8">
+        <h1 class="mt-8 text-center text-4xl font-bold">
             PartySpace
         </h1>
+        <p class="mt-2 text-center text-sm text-slate-500">Crie sua conta</p>
 
         {% if messages %}
-        <div class="mb-5">
-
+        <div class="mt-6 space-y-2">
             {% for message in messages %}
-            <div class="bg-red-100 border border-red-500 text-red-700 px-4 py-2 rounded-lg text-sm">
-
+            <div class="rounded-lg border px-4 py-3 text-sm {% if message.tags == 'success' %}border-green-200 bg-green-50 text-green-800{% else %}border-red-200 bg-red-50 text-red-700{% endif %}">
                 {{ message }}
-
             </div>
             {% endfor %}
         </div>
         {% endif %}
 
-        <form method="POST">
+        <form method="POST" class="mt-8 space-y-4">
             {% csrf_token %}
 
-            <div class="mb-4">
-                <label class="block mb-2">
-                    Nome:
-                </label>
-
-                <input type="text" name="nome" required class="w-full h-12 border border-black rounded-lg px-4">
-            </div>
-            <div class="mb-4">
-
-                <label class="block mb-2">
-                    CPF:
-                </label>
-
-                <input type="text" name="cpf" required class="w-full h-12 border border-black rounded-lg px-4">
-            </div>
-            <div class="mb-4">
-
-                <label class="block mb-2">
-                    Senha:
-                </label>
-
-                <input type="password" name="senha" required class="w-full h-12 border border-black rounded-lg px-4">
+            <div>
+                <label for="nome" class="mb-2 block text-sm font-medium">Nome</label>
+                <input id="nome" type="text" name="nome" required class="h-12 w-full rounded-lg border border-slate-300 px-4 outline-none focus:border-slate-700">
             </div>
 
-            <div class="mb-6">
-
-                <label class="block mb-2">
-                    Confirmar senha:
-                </label>
-                <input type="password" name="confirmar_senha" required
-                    class="w-full h-12 border border-black rounded-lg px-4">
+            <div>
+                <label for="cpf" class="mb-2 block text-sm font-medium">CPF</label>
+                <input id="cpf" type="text" name="cpf" required class="h-12 w-full rounded-lg border border-slate-300 px-4 outline-none focus:border-slate-700">
             </div>
 
-            <button type="submit" class="w-full border border-black rounded-lg py-3 hover:bg-gray-100">
+            <div>
+                <label for="senha" class="mb-2 block text-sm font-medium">Senha</label>
+                <input id="senha" type="password" name="senha" required class="h-12 w-full rounded-lg border border-slate-300 px-4 outline-none focus:border-slate-700">
+            </div>
+
+            <div>
+                <label for="confirmar_senha" class="mb-2 block text-sm font-medium">Confirmar senha</label>
+                <input id="confirmar_senha" type="password" name="confirmar_senha" required
+                    class="h-12 w-full rounded-lg border border-slate-300 px-4 outline-none focus:border-slate-700">
+            </div>
+
+            <button type="submit" class="w-full rounded-lg bg-slate-900 py-3 text-sm font-semibold text-white hover:bg-slate-700">
                 Cadastre-se
             </button>
         </form>
-    </div>
+    </main>
 </body>
 
 </html>

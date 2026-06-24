@@ -6,11 +6,15 @@ from .models import Usuario
 
 
 class LoginTests(TestCase):
-    def test_rota_inicial_abre_home(self):
+    def test_rota_inicial_abre_login(self):
+        response = self.client.get(reverse('entrada'))
+
+        self.assertRedirects(response, reverse('login'))
+
+    def test_home_exige_login(self):
         response = self.client.get(reverse('tela_inicial'))
 
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'home.html')
+        self.assertRedirects(response, reverse('login'))
 
     def test_login_usuario_redireciona_para_home(self):
         Usuario.objects.create(

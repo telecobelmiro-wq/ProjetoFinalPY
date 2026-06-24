@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
+{% load static %}
 <html lang="pt-br">
 
 <head>
@@ -8,117 +9,148 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-gray-100 min-h-screen p-5">
+<body class="min-h-screen bg-slate-100 p-5 text-slate-900">
 
-    <main class="bg-white border border-black rounded-xl max-w-3xl mx-auto p-8 min-h-[680px]">
+    <main class="mx-auto max-w-5xl">
 
-        <header class="flex justify-end items-center gap-4 mb-8">
-            <p class="text-sm">Administrador</p>
-            <a href="{% url 'sair' %}" class="border border-black rounded-md px-6 py-2 text-sm hover:bg-gray-100">
-                Sair
-            </a>
+        <header class="mb-6 flex flex-col gap-4 rounded-lg border border-slate-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <h1 class="text-3xl font-bold">PartySpace</h1>
+                <p class="text-sm text-slate-500">Painel administrativo</p>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <span class="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium">Administrador</span>
+                <a href="{% url 'sair' %}" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-50">
+                    Sair
+                </a>
+            </div>
         </header>
-
-        <h1 class="text-center text-5xl font-bold mb-14">PartySpace</h1>
 
         {% if messages %}
         <div class="mb-5 space-y-2">
             {% for message in messages %}
-            <div class="border border-black rounded-lg px-4 py-2 text-sm {% if message.tags == 'success' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-700{% endif %}">
+            <div class="rounded-lg border px-4 py-3 text-sm {% if message.tags == 'success' %}border-green-200 bg-green-50 text-green-800{% else %}border-red-200 bg-red-50 text-red-700{% endif %}">
                 {{ message }}
             </div>
             {% endfor %}
         </div>
         {% endif %}
 
-        <section class="max-w-md mx-auto space-y-5 mb-12">
-            <button type="button" id="btn-cadastrar" class="w-full border border-black rounded-xl py-5 text-2xl hover:bg-gray-100">
+        <section class="mb-6 grid gap-3 sm:grid-cols-3">
+            <button type="button" id="btn-cadastrar" class="rounded-lg border border-slate-300 bg-white px-4 py-4 text-left font-semibold shadow-sm hover:border-slate-500">
                 Cadastrar Espaco
             </button>
 
-            <button type="button" id="btn-reservados"
-                class="block w-full border border-black rounded-xl py-5 text-2xl text-center hover:bg-gray-100">
+            <button type="button" id="btn-reservados" class="rounded-lg border border-slate-300 bg-white px-4 py-4 text-left font-semibold shadow-sm hover:border-slate-500">
                 Espacos Reservados
             </button>
 
-            <button type="button" id="btn-clientes"
-                class="block w-full border border-black rounded-xl py-5 text-2xl text-center hover:bg-gray-100">
+            <button type="button" id="btn-clientes" class="rounded-lg border border-slate-300 bg-white px-4 py-4 text-left font-semibold shadow-sm hover:border-slate-500">
                 Clientes
             </button>
         </section>
 
-        <section id="cadastro-espaco" class="hidden border border-black rounded-xl p-5 mb-6">
-            <h2 class="text-xl font-bold mb-4">Cadastrar Espaco</h2>
+        <section id="cadastro-espaco" class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+            <h2 class="mb-4 text-xl font-bold">Cadastrar Espaco</h2>
 
-            <form method="POST" class="space-y-4">
+            <form method="POST" enctype="multipart/form-data" class="grid gap-4 lg:grid-cols-[1fr_280px]">
                 {% csrf_token %}
-                <input type="text" name="nome" placeholder="Nome do espaco" required
-                    class="w-full h-10 border border-black rounded-md px-4">
+                <div class="space-y-4">
+                    <input type="text" name="nome" placeholder="Nome do espaco" required
+                        class="h-11 w-full rounded-lg border border-slate-300 px-4 outline-none focus:border-slate-700">
 
-                <input type="text" name="endereco" placeholder="Endereco" required
-                    class="w-full h-10 border border-black rounded-md px-4">
+                    <input type="text" name="endereco" placeholder="Endereco" required
+                        class="h-11 w-full rounded-lg border border-slate-300 px-4 outline-none focus:border-slate-700">
 
-                <textarea name="descricao" placeholder="Descricao do espaco" required
-                    class="w-full h-32 border border-black rounded-md px-4 py-2"></textarea>
+                    <textarea name="descricao" placeholder="Descricao do espaco" required
+                        class="h-32 w-full rounded-lg border border-slate-300 px-4 py-3 outline-none focus:border-slate-700"></textarea>
+                </div>
 
-                <button type="submit" class="border border-black rounded-md px-8 py-2 hover:bg-gray-100">
-                    Salvar
-                </button>
+                <div class="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-4">
+                    <label for="imagens" class="mb-3 block text-sm font-semibold text-slate-700">Imagens do espaco</label>
+                    <input id="imagens" type="file" name="imagens" accept="image/*" multiple required
+                        class="block w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-900 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-slate-700">
+
+                    <div id="preview-imagens" class="mt-4 grid grid-cols-2 gap-2"></div>
+
+                    <button type="submit" class="mt-5 w-full rounded-lg bg-slate-900 px-5 py-3 text-sm font-semibold text-white hover:bg-slate-700">
+                        Salvar Espaco
+                    </button>
+                </div>
             </form>
 
-            <h3 class="text-lg font-bold mt-8 mb-3">Espacos Cadastrados</h3>
+            <h3 class="mb-3 mt-8 text-lg font-bold">Espacos Cadastrados</h3>
             {% if espacos %}
-            <div class="space-y-3">
+            <div class="grid gap-3 sm:grid-cols-2">
                 {% for espaco in espacos %}
-                <div class="border border-black rounded-lg p-3">
-                    <p><strong>Nome:</strong> {{ espaco.nome }}</p>
-                    <p><strong>Endereco:</strong> {{ espaco.endereco }}</p>
+                <div class="flex gap-3 rounded-lg border border-slate-200 p-3">
+                    <div class="h-20 w-24 shrink-0 overflow-hidden rounded-lg bg-slate-200">
+                        {% with foto=espaco.imagens.first %}
+                        {% if foto %}
+                        <img src="{{ foto.imagem.url }}" alt="{{ espaco.nome }}" class="h-full w-full object-cover">
+                        {% elif espaco.imagem_capa_padrao %}
+                        <img src="{% static espaco.imagem_capa_padrao %}" alt="{{ espaco.nome }}" class="h-full w-full object-cover">
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div>
+                        <p class="font-bold">{{ espaco.nome }}</p>
+                        <p class="text-sm text-slate-600">{{ espaco.endereco }}</p>
+                        {% if espaco.imagens.count %}
+                        <p class="mt-1 text-xs text-slate-500">{{ espaco.imagens.count }} imagem(ns)</p>
+                        {% else %}
+                        <p class="mt-1 text-xs text-slate-500">Imagens padrao</p>
+                        {% endif %}
+                    </div>
                 </div>
                 {% endfor %}
             </div>
             {% else %}
-            <p>Nenhum espaco cadastrado.</p>
+            <p class="text-sm text-slate-500">Nenhum espaco cadastrado.</p>
             {% endif %}
         </section>
 
-        <section id="reservados" class="hidden border border-black rounded-xl p-5 mb-6">
-            <h2 class="text-xl font-bold mb-4">Espacos Reservados</h2>
+        <section id="reservados" class="hidden rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+            <h2 class="mb-4 text-xl font-bold">Espacos Reservados</h2>
 
             {% if alugueis %}
             <div class="space-y-3">
                 {% for aluguel in alugueis %}
-                <div class="border border-black rounded-lg p-4 flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
-                    <div>
-                        <p><strong>Espaco:</strong> {{ aluguel.espaco.nome }}</p>
-                        <p><strong>Cliente:</strong> {{ aluguel.usuario.nome }}</p>
-                        <p><strong>Dia:</strong> {{ aluguel.dia }}</p>
-                        <p><strong>Duracao:</strong> {{ aluguel.duracao }}</p>
-                        <p><strong>Horarios:</strong> {{ aluguel.horarios }}</p>
-                    </div>
+                <div class="rounded-lg border border-slate-200 p-4">
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <p><strong>Espaco:</strong> {{ aluguel.espaco.nome }}</p>
+                            <p><strong>Cliente:</strong> {{ aluguel.usuario.nome }}</p>
+                            <p><strong>Dia:</strong> {{ aluguel.dia }}</p>
+                            <p><strong>Duracao:</strong> {{ aluguel.duracao }}</p>
+                            <p><strong>Horarios:</strong> {{ aluguel.horarios }}</p>
+                        </div>
 
-                    <form method="POST">
-                        {% csrf_token %}
-                        <input type="hidden" name="acao" value="cancelar">
-                        <input type="hidden" name="aluguel_id" value="{{ aluguel.id }}">
-                        <button type="submit" class="border border-black rounded-md px-4 py-2 text-sm hover:bg-gray-100">
-                            Cancelar
-                        </button>
-                    </form>
+                        <form method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="acao" value="cancelar">
+                            <input type="hidden" name="aluguel_id" value="{{ aluguel.id }}">
+                            <button type="submit" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-50">
+                                Cancelar
+                            </button>
+                        </form>
+                    </div>
                 </div>
                 {% endfor %}
             </div>
             {% else %}
-            <p>Nenhum aluguel cadastrado.</p>
+            <p class="text-sm text-slate-500">Nenhum aluguel cadastrado.</p>
             {% endif %}
         </section>
 
-        <section id="clientes" class="hidden border border-black rounded-xl p-5">
-            <h2 class="text-xl font-bold mb-4">Clientes</h2>
+        <section id="clientes" class="hidden rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+            <h2 class="mb-4 text-xl font-bold">Clientes</h2>
 
             {% if usuarios %}
-            <div class="space-y-3">
+            <div class="grid gap-3 sm:grid-cols-2">
                 {% for usuario in usuarios %}
-                <div class="border border-black rounded-lg p-3">
+                <div class="rounded-lg border border-slate-200 p-4">
                     <p><strong>Nome:</strong> {{ usuario.nome }}</p>
                     <p><strong>CPF:</strong> {{ usuario.cpf }}</p>
                     <p><strong>Cadastrado em:</strong> {{ usuario.criado_em|date:"d/m/Y H:i" }}</p>
@@ -126,7 +158,7 @@
                 {% endfor %}
             </div>
             {% else %}
-            <p>Nenhum usuario cadastrado.</p>
+            <p class="text-sm text-slate-500">Nenhum usuario cadastrado.</p>
             {% endif %}
         </section>
 
@@ -136,23 +168,38 @@
         let reservados = document.getElementById("reservados")
         let clientes = document.getElementById("clientes")
         let cadastroEspaco = document.getElementById("cadastro-espaco")
+        let inputImagens = document.getElementById("imagens")
+        let previewImagens = document.getElementById("preview-imagens")
+
+        function mostrar(secao) {
+            cadastroEspaco.classList.toggle("hidden", secao !== cadastroEspaco)
+            reservados.classList.toggle("hidden", secao !== reservados)
+            clientes.classList.toggle("hidden", secao !== clientes)
+        }
 
         document.getElementById("btn-reservados").addEventListener("click", function () {
-            reservados.classList.remove("hidden")
-            clientes.classList.add("hidden")
-            cadastroEspaco.classList.add("hidden")
+            mostrar(reservados)
         })
 
         document.getElementById("btn-clientes").addEventListener("click", function () {
-            clientes.classList.remove("hidden")
-            reservados.classList.add("hidden")
-            cadastroEspaco.classList.add("hidden")
+            mostrar(clientes)
         })
 
         document.getElementById("btn-cadastrar").addEventListener("click", function () {
-            cadastroEspaco.classList.remove("hidden")
-            reservados.classList.add("hidden")
-            clientes.classList.add("hidden")
+            mostrar(cadastroEspaco)
+        })
+
+        inputImagens.addEventListener("change", function () {
+            previewImagens.innerHTML = ""
+            Array.from(this.files).slice(0, 6).forEach(function (arquivo) {
+                let img = document.createElement("img")
+                img.src = URL.createObjectURL(arquivo)
+                img.className = "h-20 w-full rounded-lg object-cover"
+                img.onload = function () {
+                    URL.revokeObjectURL(img.src)
+                }
+                previewImagens.appendChild(img)
+            })
         })
     </script>
 

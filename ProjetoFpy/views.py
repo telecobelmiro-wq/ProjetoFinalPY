@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.hashers import check_password, make_password
 from django.db.models import Q
-from .models import Usuario, Aluguel, Espaco
+from .models import Usuario, Aluguel, Espaco, EspacoImagem
 
 
 HORARIOS = [
@@ -35,6 +35,11 @@ def cria_espaco():
     if not criado and e.descricao != desc_dubai:
         e.descricao = desc_dubai
         e.save()
+
+
+def entrada_view(request):
+    request.session.flush()
+    return redirect('login')
 
 
 def get_usuario_logado(request):
@@ -78,8 +83,11 @@ def tela_inicial(request):
         return redirect('painel_admin')
 
     cria_espaco()
-    espacos = Espaco.objects.all()
     usuario = get_usuario_logado(request)
+    if not usuario:
+        return redirect('login')
+
+    espacos = Espaco.objects.prefetch_related('imagens').all()
     nome = usuario.nome if usuario else None
 
     alugados = set()
@@ -106,21 +114,43 @@ def painel_admin(request):
             messages.success(request, 'Reserva cancelada com sucesso.')
             return redirect('painel_admin')
 
-        Espaco.objects.create(
-            nome=request.POST.get('nome'),
-            endereco=request.POST.get('endereco'),
-            descricao=request.POST.get('descricao'),
-            imagem1='ProjetoFpy/img/dubaieventos.jpg',
-            imagem2='ProjetoFpy/img/dubaiinterno.jpg',
-            imagem3='ProjetoFpy/img/palcodubai.webp'
+        nome = request.POST.get('nome', '').strip()
+        endereco = request.POST.get('endereco', '').strip()
+        descricao = request.POST.get('descricao', '').strip()
+        imagens = request.FILES.getlist('imagens')
+
+        if not nome or not endereco or not descricao:
+            messages.error(request, 'Preencha nome, endereco e descricao do espaco.')
+            return redirect('painel_admin')
+
+        if not imagens:
+            messages.error(request, 'Envie pelo menos uma imagem do espaco.')
+            return redirect('painel_admin')
+
+        imagens_invalidas = [
+            imagem.name for imagem in imagens
+            if not imagem.content_type.startswith('image/')
+        ]
+        if imagens_invalidas:
+            messages.error(request, 'Envie apenas arquivos de imagem.')
+            return redirect('painel_admin')
+
+        espaco = Espaco.objects.create(
+            nome=nome,
+            endereco=endereco,
+            descricao=descricao,
         )
+        for imagem in imagens:
+            EspacoImagem.objects.create(espaco=espaco, imagem=imagem)
+
+        messages.success(request, 'Espaco cadastrado com sucesso.')
         return redirect('painel_admin')
 
     cria_espaco()
     return render(request, 'admin.html', {
         'usuarios': Usuario.objects.all(),
         'alugueis': Aluguel.objects.select_related('usuario', 'espaco').all().order_by('-criado_em'),
-        'espacos': Espaco.objects.all()
+        'espacos': Espaco.objects.prefetch_related('imagens').all()
     })
 
 
@@ -170,9 +200,9 @@ def sair_view(request):
 def descricao_view(request):
     cria_espaco()
     espaco_id = request.GET.get('espaco')
-    espaco = Espaco.objects.filter(id=espaco_id).first()
+    espaco = Espaco.objects.prefetch_related('imagens').filter(id=espaco_id).first()
     if not espaco:
-        espaco = Espaco.objects.first()
+        espaco = Espaco.objects.prefetch_related('imagens').first()
     return render(request, 'descricao.html', {'espaco': espaco})
 
 
@@ -229,9 +259,9 @@ def disponibilidade_view(request):
 
     espaco_id = request.GET.get('espaco')
     dia = request.GET.get('dia', '')
-    espaco = Espaco.objects.filter(id=espaco_id).first()
+    espaco = Espaco.objects.prefetch_related('imagens').filter(id=espaco_id).first()
     if not espaco:
-        espaco = Espaco.objects.first()
+        espaco = Espaco.objects.prefetch_related('imagens').first()
     ocupados = pega_horarios_ocupados(espaco, dia) if dia else []
     return render(request, 'disponibilidade.html', {
         'espaco': espaco,

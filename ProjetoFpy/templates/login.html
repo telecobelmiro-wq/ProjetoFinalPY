@@ -5,67 +5,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PartySpace - Login</title>
-
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-gray-100 min-h-screen flex items-center justify-center p-5">
+<body class="flex min-h-screen items-center justify-center bg-slate-100 p-5 text-slate-900">
 
-    <div class="bg-white border border-black rounded-xl w-full max-w-md p-8">
+    <main class="w-full max-w-md rounded-lg border border-slate-200 bg-white p-8 shadow-sm">
 
-        <h1 class="text-center text-4xl font-bold mb-8">
+        <h1 class="text-center text-4xl font-bold">
             PartySpace
         </h1>
+        <p class="mt-2 text-center text-sm text-slate-500">Entre para acessar os espacos</p>
 
         {% if messages %}
-        <div class="mb-5">
+        <div class="mt-6 space-y-2">
             {% for message in messages %}
-            <div class="bg-red-100 border border-red-500 text-red-700 px-4 py-2 rounded-lg text-sm">
+            <div class="rounded-lg border px-4 py-3 text-sm {% if message.tags == 'success' %}border-green-200 bg-green-50 text-green-800{% else %}border-red-200 bg-red-50 text-red-700{% endif %}">
                 {{ message }}
             </div>
             {% endfor %}
         </div>
         {% endif %}
 
-        <form method="POST" action="{% url 'login' %}">
-
+        <form method="POST" action="{% url 'login' %}" class="mt-8 space-y-5">
             {% csrf_token %}
-            <div class="mb-5">
 
-                <label class="block mb-2">
-                    Nome:
-                </label>
-
-                <input type="text" name="username" value="{{ username|default:'' }}" required class="w-full h-12 border border-black rounded-lg px-4">
-
+            <div>
+                <label for="username" class="mb-2 block text-sm font-medium">Nome ou CPF</label>
+                <input id="username" type="text" name="username" value="{{ username|default:'' }}" required
+                    class="h-12 w-full rounded-lg border border-slate-300 px-4 outline-none focus:border-slate-700">
             </div>
 
-            <div class="mb-5">
-
-                <label class="block mb-2">
-                    Senha:
-                </label>
-
-                <input type="password" name="password" required class="w-full h-12 border border-black rounded-lg px-4">
-
+            <div>
+                <label for="password" class="mb-2 block text-sm font-medium">Senha</label>
+                <input id="password" type="password" name="password" required
+                    class="h-12 w-full rounded-lg border border-slate-300 px-4 outline-none focus:border-slate-700">
             </div>
-            <div class="text-center mt-8">
 
-                <button type="submit" class="border border-black rounded-md px-8 py-2 hover:bg-gray-100">
-                    ENTRAR
-                </button>
-
-
-                <p class="mt-4">
-
-                    <a href="{% url 'cadastro' %}" class="hover:underline">
-                        Cadastre-se
-                    </a>
-
-                </p>
-            </div>
+            <button type="submit" class="w-full rounded-lg bg-slate-900 px-8 py-3 text-sm font-semibold uppercase text-white hover:bg-slate-700">
+                Entrar
+            </button>
         </form>
-    </div>
+
+        <p class="mt-5 text-center text-sm text-slate-600">
+            <a href="{% url 'cadastro' %}" class="font-medium text-slate-900 hover:underline">
+                Cadastre-se
+            </a>
+        </p>
+    </main>
 </body>
 
 </html>
