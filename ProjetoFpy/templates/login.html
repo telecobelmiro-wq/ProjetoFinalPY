@@ -27,7 +27,7 @@
         </div>
         {% endif %}
 
-        <form method="POST">
+        <form method="POST" action="{% url 'login' %}">
 
             {% csrf_token %}
             <div class="mb-5">
@@ -36,7 +36,7 @@
                     Nome:
                 </label>
 
-                <input type="text" name="username" required class="w-full h-12 border border-black rounded-lg px-4">
+                <input type="text" name="username" value="{{ username|default:'' }}" required class="w-full h-12 border border-black rounded-lg px-4">
 
             </div>
 
@@ -52,7 +52,7 @@
             <div class="text-center mt-8">
 
                 <button type="submit" class="border border-black rounded-md px-8 py-2 hover:bg-gray-100">
-                    Entrar
+                    ENTRAR
                 </button>
 
 

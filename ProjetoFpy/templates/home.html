@@ -16,9 +16,18 @@
         <header class="flex justify-between items-center mb-8 gap-4">
             <div></div>
             <h1 class="text-4xl font-bold text-center">PartySpace</h1>
+            {% if usuario_nome %}
+            <div class="flex items-center gap-2">
+                <span class="text-sm">{{ usuario_nome }}</span>
+                <a href="{% url 'sair' %}" class="border border-black rounded-md px-4 py-2 text-sm hover:bg-gray-100">
+                    Sair
+                </a>
+            </div>
+            {% else %}
             <a href="{% url 'login' %}" class="border border-black rounded-md px-4 py-2 text-sm hover:bg-gray-100">
-                {{ usuario_nome|default:"Login" }}
+                Login
             </a>
+            {% endif %}
         </header>
 
         {% if messages %}
