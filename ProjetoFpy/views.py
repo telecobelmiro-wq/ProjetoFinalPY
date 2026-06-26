@@ -1,8 +1,12 @@
+from datetime import date
+import re
+
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.hashers import check_password, make_password
 from django.db.models import Q
-from .models import Usuario, Aluguel, Espaco, EspacoImagem
+from django.utils import timezone
+from .models import Usuario, Aluguel, Configuracao, Espaco, EspacoImagem
 
 
 HORARIOS = [
@@ -11,6 +15,9 @@ HORARIOS = [
     '13:00', '14:00', '15:00', '16:00', '17:00', '18:00',
     '19:00', '20:00', '21:00', '22:00', '23:00', '00:00',
 ]
+
+
+ESPACO_PADRAO_CHAVE = 'espaco_padrao_criado'
 
 
 desc_dubai = (
@@ -22,19 +29,18 @@ desc_dubai = (
 
 
 def cria_espaco():
-    e, criado = Espaco.objects.get_or_create(
+    _, criado = Configuracao.objects.get_or_create(chave=ESPACO_PADRAO_CHAVE)
+    if not criado or Espaco.objects.exists():
+        return
+
+    Espaco.objects.create(
         nome='Dubai Eventos',
-        defaults={
-            'endereco': 'R. Barao do Arroio Grande, 599 - Lot. Vila Nova, Santa Cruz do Sul - RS, 96835-213',
-            'descricao': desc_dubai,
-            'imagem1': 'ProjetoFpy/img/dubaieventos.jpg',
-            'imagem2': 'ProjetoFpy/img/dubaiinterno.jpg',
-            'imagem3': 'ProjetoFpy/img/palcodubai.webp',
-        }
+        endereco='R. Barao do Arroio Grande, 599 - Lot. Vila Nova, Santa Cruz do Sul - RS, 96835-213',
+        descricao=desc_dubai,
+        imagem1='ProjetoFpy/img/dubaieventos.jpg',
+        imagem2='ProjetoFpy/img/dubaiinterno.jpg',
+        imagem3='ProjetoFpy/img/palcodubai.webp',
     )
-    if not criado and e.descricao != desc_dubai:
-        e.descricao = desc_dubai
-        e.save()
 
 
 def entrada_view(request):
@@ -78,6 +84,13 @@ def cpf_eh_valido(cpf):
     return segundo_digito == int(cpf[10])
 
 
+def imagens_invalidas(imagens):
+    return [
+        imagem.name for imagem in imagens
+        if not imagem.content_type.startswith('image/')
+    ]
+
+
 def tela_inicial(request):
     if request.session.get('admin_logado'):
         return redirect('painel_admin')
@@ -109,9 +122,56 @@ def painel_admin(request):
         return redirect('login')
 
     if request.method == 'POST':
-        if request.POST.get('acao') == 'cancelar':
+        acao = request.POST.get('acao', 'cadastrar')
+
+        if acao == 'cancelar':
             Aluguel.objects.filter(id=request.POST.get('aluguel_id')).delete()
             messages.success(request, 'Reserva cancelada com sucesso.')
+            return redirect('painel_admin')
+
+        if acao == 'apagar_espaco':
+            Configuracao.objects.get_or_create(chave=ESPACO_PADRAO_CHAVE)
+            espaco = Espaco.objects.filter(id=request.POST.get('espaco_id')).first()
+
+            if not espaco:
+                messages.error(request, 'Espaco nao encontrado.')
+            else:
+                espaco.delete()
+                messages.success(request, 'Espaco apagado com sucesso.')
+
+            return redirect('painel_admin')
+
+        if acao == 'editar_espaco':
+            espaco = Espaco.objects.filter(id=request.POST.get('espaco_id')).first()
+            nome = request.POST.get('nome', '').strip()
+            endereco = request.POST.get('endereco', '').strip()
+            descricao = request.POST.get('descricao', '').strip()
+            imagens = request.FILES.getlist('imagens')
+
+            if not espaco:
+                messages.error(request, 'Espaco nao encontrado.')
+                return redirect('painel_admin')
+
+            if not nome or not endereco or not descricao:
+                messages.error(request, 'Preencha nome, endereco e descricao do espaco.')
+                return redirect('painel_admin')
+
+            nomes_invalidos = imagens_invalidas(imagens)
+            if nomes_invalidos:
+                messages.error(request, 'Envie apenas arquivos de imagem.')
+                return redirect('painel_admin')
+
+            espaco.nome = nome
+            espaco.endereco = endereco
+            espaco.descricao = descricao
+            espaco.save()
+
+            if imagens:
+                espaco.imagens.all().delete()
+                for imagem in imagens:
+                    EspacoImagem.objects.create(espaco=espaco, imagem=imagem)
+
+            messages.success(request, 'Espaco atualizado com sucesso.')
             return redirect('painel_admin')
 
         nome = request.POST.get('nome', '').strip()
@@ -127,11 +187,8 @@ def painel_admin(request):
             messages.error(request, 'Envie pelo menos uma imagem do espaco.')
             return redirect('painel_admin')
 
-        imagens_invalidas = [
-            imagem.name for imagem in imagens
-            if not imagem.content_type.startswith('image/')
-        ]
-        if imagens_invalidas:
+        nomes_invalidos = imagens_invalidas(imagens)
+        if nomes_invalidos:
             messages.error(request, 'Envie apenas arquivos de imagem.')
             return redirect('painel_admin')
 
@@ -219,6 +276,47 @@ def pega_horarios_ocupados(espaco, dia):
     return ocupados
 
 
+def data_reserva_valida(dia):
+    try:
+        return date.fromisoformat(dia)
+    except (TypeError, ValueError):
+        return None
+
+
+def duracao_em_horas(duracao):
+    match = re.fullmatch(r'\s*(\d+)(?:\s*horas?)?\s*', duracao, re.IGNORECASE)
+    if not match:
+        return None
+
+    horas = int(match.group())
+    if horas < 1 or horas > len(HORARIOS):
+        return None
+    return horas
+
+
+def horarios_ordenados(horarios):
+    horarios_limpos = [hora.strip() for hora in horarios if hora.strip()]
+    if len(horarios_limpos) != len(set(horarios_limpos)):
+        return None
+
+    if any(hora not in HORARIOS for hora in horarios_limpos):
+        return None
+
+    return sorted(horarios_limpos, key=HORARIOS.index)
+
+
+def horarios_sao_seguidos(horarios):
+    if not horarios:
+        return False
+
+    indices = [HORARIOS.index(hora) for hora in horarios]
+    return indices == list(range(indices[0], indices[0] + len(indices)))
+
+
+def texto_duracao(horas):
+    return f'{horas} hora' if horas == 1 else f'{horas} horas'
+
+
 def disponibilidade_view(request):
     usuario = get_usuario_logado(request)
     if not usuario:
@@ -231,6 +329,9 @@ def disponibilidade_view(request):
         duracao = request.POST.get('duracao', '').strip()
         horarios = request.POST.get('horarios', '').strip()
         horarios_lista = [h for h in horarios.split(',') if h]
+        data_reserva = data_reserva_valida(dia)
+        horas_duracao = duracao_em_horas(duracao)
+        horarios_lista = horarios_ordenados(horarios_lista)
 
         if not espaco:
             messages.error(request, 'Nao foi possivel encontrar o espaco.')
@@ -239,6 +340,26 @@ def disponibilidade_view(request):
         if not dia or not duracao or not horarios_lista:
             messages.error(request, 'Preencha o dia, a duracao e escolha pelo menos um horario.')
             return redirect(f'/disponibilidade/?espaco={espaco.id}')
+
+        if not data_reserva:
+            messages.error(request, 'Escolha uma data valida.')
+            return redirect(f'/disponibilidade/?espaco={espaco.id}')
+
+        if data_reserva < timezone.localdate():
+            messages.error(request, 'Nao e possivel reservar em dias que ja passaram.')
+            return redirect(f'/disponibilidade/?espaco={espaco.id}')
+
+        if not horas_duracao:
+            messages.error(request, 'Informe a duracao em horas.')
+            return redirect(f'/disponibilidade/?espaco={espaco.id}&dia={dia}')
+
+        if len(horarios_lista) != horas_duracao:
+            messages.error(request, f'A duracao de {texto_duracao(horas_duracao)} precisa ter {horas_duracao} horario(s) selecionado(s).')
+            return redirect(f'/disponibilidade/?espaco={espaco.id}&dia={dia}')
+
+        if not horarios_sao_seguidos(horarios_lista):
+            messages.error(request, 'Escolha horarios seguidos, sem intervalos entre eles.')
+            return redirect(f'/disponibilidade/?espaco={espaco.id}&dia={dia}')
 
         ocupados = pega_horarios_ocupados(espaco, dia)
         conflito = [hora for hora in horarios_lista if hora in ocupados]
@@ -249,8 +370,8 @@ def disponibilidade_view(request):
 
         Aluguel.objects.create(
             dia=dia,
-            duracao=duracao,
-            horarios=horarios,
+            duracao=texto_duracao(horas_duracao),
+            horarios=','.join(horarios_lista),
             usuario=usuario,
             espaco=espaco,
         )
@@ -262,12 +383,18 @@ def disponibilidade_view(request):
     espaco = Espaco.objects.prefetch_related('imagens').filter(id=espaco_id).first()
     if not espaco:
         espaco = Espaco.objects.prefetch_related('imagens').first()
+    if dia:
+        data_reserva = data_reserva_valida(dia)
+        if not data_reserva or data_reserva < timezone.localdate():
+            messages.error(request, 'Escolha uma data de hoje em diante.')
+            dia = ''
     ocupados = pega_horarios_ocupados(espaco, dia) if dia else []
     return render(request, 'disponibilidade.html', {
         'espaco': espaco,
         'horarios': HORARIOS,
         'ocupados': ocupados,
         'dia_selecionado': dia,
+        'hoje': timezone.localdate().isoformat(),
     })
 
 

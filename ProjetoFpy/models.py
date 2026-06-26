@@ -9,6 +9,15 @@ class Usuario(models.Model):
     def __str__(self):
         return self.nome
 
+
+class Configuracao(models.Model):
+    chave = models.CharField(max_length=100, unique=True)
+    criado_em = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.chave
+
+
 class Espaco(models.Model):
     nome = models.CharField(max_length=100)
     endereco = models.CharField(max_length=255)

@@ -84,25 +84,67 @@
             {% if espacos %}
             <div class="grid gap-3 sm:grid-cols-2">
                 {% for espaco in espacos %}
-                <div class="flex gap-3 rounded-lg border border-slate-200 p-3">
-                    <div class="h-20 w-24 shrink-0 overflow-hidden rounded-lg bg-slate-200">
-                        {% with foto=espaco.imagens.first %}
-                        {% if foto %}
-                        <img src="{{ foto.imagem.url }}" alt="{{ espaco.nome }}" class="h-full w-full object-cover">
-                        {% elif espaco.imagem_capa_padrao %}
-                        <img src="{% static espaco.imagem_capa_padrao %}" alt="{{ espaco.nome }}" class="h-full w-full object-cover">
-                        {% endif %}
-                        {% endwith %}
+                <div class="rounded-lg border border-slate-200 p-3">
+                    <div class="flex gap-3">
+                        <div class="h-20 w-24 shrink-0 overflow-hidden rounded-lg bg-slate-200">
+                            {% with foto=espaco.imagens.first %}
+                            {% if foto %}
+                            <img src="{{ foto.imagem.url }}" alt="{{ espaco.nome }}" class="h-full w-full object-cover">
+                            {% elif espaco.imagem_capa_padrao %}
+                            <img src="{% static espaco.imagem_capa_padrao %}" alt="{{ espaco.nome }}" class="h-full w-full object-cover">
+                            {% endif %}
+                            {% endwith %}
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <p class="font-bold">{{ espaco.nome }}</p>
+                            <p class="text-sm text-slate-600">{{ espaco.endereco }}</p>
+                            {% if espaco.imagens.count %}
+                            <p class="mt-1 text-xs text-slate-500">{{ espaco.imagens.count }} imagem(ns)</p>
+                            {% else %}
+                            <p class="mt-1 text-xs text-slate-500">Imagens padrao</p>
+                            {% endif %}
+
+                            <div class="mt-3 flex flex-wrap gap-2">
+                                <button type="button" data-editar="editar-espaco-{{ espaco.id }}" class="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium hover:bg-slate-50">
+                                    Editar
+                                </button>
+
+                                <form method="POST" onsubmit="return confirm('Tem certeza que deseja apagar este espaco?')">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="acao" value="apagar_espaco">
+                                    <input type="hidden" name="espaco_id" value="{{ espaco.id }}">
+                                    <button type="submit" class="rounded-lg border border-red-300 px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-50">
+                                        Apagar
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <p class="font-bold">{{ espaco.nome }}</p>
-                        <p class="text-sm text-slate-600">{{ espaco.endereco }}</p>
-                        {% if espaco.imagens.count %}
-                        <p class="mt-1 text-xs text-slate-500">{{ espaco.imagens.count }} imagem(ns)</p>
-                        {% else %}
-                        <p class="mt-1 text-xs text-slate-500">Imagens padrao</p>
-                        {% endif %}
-                    </div>
+
+                    <form id="editar-espaco-{{ espaco.id }}" method="POST" enctype="multipart/form-data" class="mt-4 hidden space-y-3 rounded-lg bg-slate-50 p-3">
+                        {% csrf_token %}
+                        <input type="hidden" name="acao" value="editar_espaco">
+                        <input type="hidden" name="espaco_id" value="{{ espaco.id }}">
+
+                        <input type="text" name="nome" value="{{ espaco.nome }}" required
+                            class="h-11 w-full rounded-lg border border-slate-300 px-4 outline-none focus:border-slate-700">
+
+                        <input type="text" name="endereco" value="{{ espaco.endereco }}" required
+                            class="h-11 w-full rounded-lg border border-slate-300 px-4 outline-none focus:border-slate-700">
+
+                        <textarea name="descricao" required
+                            class="h-28 w-full rounded-lg border border-slate-300 px-4 py-3 outline-none focus:border-slate-700">{{ espaco.descricao }}</textarea>
+
+                        <div>
+                            <label class="mb-2 block text-sm font-semibold text-slate-700">Trocar foto</label>
+                            <input type="file" name="imagens" accept="image/*" multiple
+                                class="block w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-900 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-slate-700">
+                        </div>
+
+                        <button type="submit" class="rounded-lg bg-slate-900 px-5 py-3 text-sm font-semibold text-white hover:bg-slate-700">
+                            Salvar alteracoes
+                        </button>
+                    </form>
                 </div>
                 {% endfor %}
             </div>
@@ -187,6 +229,13 @@
 
         document.getElementById("btn-cadastrar").addEventListener("click", function () {
             mostrar(cadastroEspaco)
+        })
+
+        document.querySelectorAll("[data-editar]").forEach(function (botao) {
+            botao.addEventListener("click", function () {
+                let formulario = document.getElementById(this.dataset.editar)
+                formulario.classList.toggle("hidden")
+            })
         })
 
         inputImagens.addEventListener("change", function () {

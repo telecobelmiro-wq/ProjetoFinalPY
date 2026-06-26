@@ -77,7 +77,7 @@
                 <input type="hidden" name="espaco" value="{{ espaco.id }}">
                 <label for="consulta-dia" class="mb-2 block text-sm font-medium">Consultar horarios por dia</label>
                 <div class="flex flex-col gap-3 sm:flex-row">
-                    <input id="consulta-dia" type="date" name="dia" value="{{ dia_selecionado }}" class="h-11 w-full rounded-lg border border-slate-300 px-3 outline-none focus:border-slate-700">
+                    <input id="consulta-dia" type="date" name="dia" value="{{ dia_selecionado }}" min="{{ hoje }}" class="h-11 w-full rounded-lg border border-slate-300 px-3 outline-none focus:border-slate-700">
                     <button type="submit" class="rounded-lg bg-slate-900 px-5 py-2 text-sm font-semibold text-white hover:bg-slate-700">Buscar</button>
                 </div>
             </form>
@@ -89,11 +89,11 @@
                 <div class="mb-6 grid gap-4 sm:grid-cols-2">
                     <div>
                         <label for="dia" class="mb-1 block text-sm font-medium">Dia</label>
-                        <input id="dia" type="date" name="dia" value="{{ dia_selecionado }}" required class="h-11 w-full rounded-lg border border-slate-300 px-3 outline-none focus:border-slate-700">
+                        <input id="dia" type="date" name="dia" value="{{ dia_selecionado }}" min="{{ hoje }}" required class="h-11 w-full rounded-lg border border-slate-300 px-3 outline-none focus:border-slate-700">
                     </div>
                     <div>
-                        <label for="duracao" class="mb-1 block text-sm font-medium">Duracao</label>
-                        <input id="duracao" type="text" name="duracao" placeholder="Ex: 4 horas" required class="h-11 w-full rounded-lg border border-slate-300 px-3 outline-none focus:border-slate-700">
+                        <label for="duracao" class="mb-1 block text-sm font-medium">Duracao em horas</label>
+                        <input id="duracao" type="number" name="duracao" min="1" max="24" step="1" placeholder="Ex: 4" required class="h-11 w-full rounded-lg border border-slate-300 px-3 outline-none focus:border-slate-700">
                     </div>
                 </div>
 
@@ -131,6 +131,28 @@
 
 <script>
     let horariosEscolhidos = []
+    let ordemHorarios = Array.from(document.querySelectorAll("[data-hora]")).map(btn => btn.dataset.hora)
+    let formularioAlugar = document.getElementById("form-alugar")
+    let inputDuracao = document.getElementById("duracao")
+    let inputHorarios = document.getElementById("horarios")
+
+    function ordenarHorarios(horarios) {
+        return horarios.slice().sort(function (a, b) {
+            return ordemHorarios.indexOf(a) - ordemHorarios.indexOf(b)
+        })
+    }
+
+    function horariosSaoSeguidos(horarios) {
+        let indices = horarios.map(hora => ordemHorarios.indexOf(hora))
+        return indices.every(function (indice, posicao) {
+            return posicao === 0 || indice === indices[posicao - 1] + 1
+        })
+    }
+
+    function atualizarCampoHorarios() {
+        horariosEscolhidos = ordenarHorarios(horariosEscolhidos)
+        inputHorarios.value = horariosEscolhidos.join(",")
+    }
 
     document.querySelectorAll(".horario").forEach(function (btn) {
         btn.addEventListener("click", function () {
@@ -146,8 +168,23 @@
                 this.classList.add("bg-slate-900", "text-white", "border-slate-900")
             }
 
-            document.getElementById("horarios").value = horariosEscolhidos.join(",")
+            atualizarCampoHorarios()
         })
+    })
+
+    formularioAlugar.addEventListener("submit", function (event) {
+        let duracao = parseInt(inputDuracao.value, 10)
+
+        if (horariosEscolhidos.length !== duracao) {
+            event.preventDefault()
+            alert("A duracao precisa bater com a quantidade de horarios selecionados.")
+            return
+        }
+
+        if (!horariosSaoSeguidos(horariosEscolhidos)) {
+            event.preventDefault()
+            alert("Escolha horarios seguidos, sem intervalos.")
+        }
     })
 </script>
 {% endblock %}

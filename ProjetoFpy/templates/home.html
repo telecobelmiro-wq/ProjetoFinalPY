@@ -93,7 +93,7 @@
                         <p class="font-bold">{{ aluguel.espaco.nome }}</p>
                         <p class="mt-2 text-sm text-slate-600">Dia: {{ aluguel.dia }}</p>
                         <p class="text-sm text-slate-600">Duracao: {{ aluguel.duracao }}</p>
-                        <p class="text-sm text-slate-600">Horarios: {{ aluguel.horarios }}</p>
+                        <p class="text-sm text-slate-600 break-all">Horarios: {{ aluguel.horarios }}</p>
 
                         <a href="{% url 'cancelar_aluguel' aluguel.id %}"
                             class="mt-4 inline-flex rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-50">
