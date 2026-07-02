@@ -16,7 +16,7 @@
         <header class="mb-6 flex flex-col gap-4 rounded-lg border border-slate-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <h1 class="text-3xl font-bold">PartySpace</h1>
-                <p class="text-sm text-slate-500">Espacos disponiveis para eventos</p>
+                <p class="text-sm text-slate-500">Espaços disponiveis para eventos</p>
             </div>
 
             <div class="flex items-center gap-3">
@@ -38,14 +38,14 @@
         {% endif %}
 
         <section class="mb-6 rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-            <label for="filtro" class="mb-2 block text-sm font-medium text-slate-700">Filtrar por endereco</label>
-            <input id="filtro" type="text" placeholder="Digite um endereco"
+            <label for="filtro" class="mb-2 block text-sm font-medium text-slate-700">Filtrar por endereço</label>
+            <input id="filtro" type="text" placeholder="Digite um endereço"
                 class="h-11 w-full rounded-lg border border-slate-300 px-4 outline-none focus:border-slate-700">
         </section>
 
         <section class="grid gap-5 lg:grid-cols-[1fr_320px]">
             <div class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-                <h2 class="mb-4 text-2xl font-bold">Espacos disponiveis</h2>
+                <h2 class="mb-4 text-2xl font-bold">Espaços disponiveis</h2>
 
                 <div class="grid gap-4 sm:grid-cols-2">
                     {% for espaco in espacos %}
