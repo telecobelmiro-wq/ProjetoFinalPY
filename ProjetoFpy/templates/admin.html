@@ -39,11 +39,11 @@
 
         <section class="mb-6 grid gap-3 sm:grid-cols-3">
             <button type="button" id="btn-cadastrar" class="rounded-lg border border-slate-300 bg-white px-4 py-4 text-left font-semibold shadow-sm hover:border-slate-500">
-                Cadastrar Espaco
+                Cadastrar Espaço
             </button>
 
             <button type="button" id="btn-reservados" class="rounded-lg border border-slate-300 bg-white px-4 py-4 text-left font-semibold shadow-sm hover:border-slate-500">
-                Espacos Reservados
+                Espaços Reservados
             </button>
 
             <button type="button" id="btn-clientes" class="rounded-lg border border-slate-300 bg-white px-4 py-4 text-left font-semibold shadow-sm hover:border-slate-500">
@@ -52,30 +52,30 @@
         </section>
 
         <section id="cadastro-espaco" class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 class="mb-4 text-xl font-bold">Cadastrar Espaco</h2>
+            <h2 class="mb-4 text-xl font-bold">Cadastrar Espaço</h2>
 
             <form method="POST" enctype="multipart/form-data" class="grid gap-4 lg:grid-cols-[1fr_280px]">
                 {% csrf_token %}
                 <div class="space-y-4">
-                    <input type="text" name="nome" placeholder="Nome do espaco" required
+                    <input type="text" name="nome" placeholder="Nome do espaço" required
                         class="h-11 w-full rounded-lg border border-slate-300 px-4 outline-none focus:border-slate-700">
 
-                    <input type="text" name="endereco" placeholder="Endereco" required
+                    <input type="text" name="endereco" placeholder="Endereço" required
                         class="h-11 w-full rounded-lg border border-slate-300 px-4 outline-none focus:border-slate-700">
 
-                    <textarea name="descricao" placeholder="Descricao do espaco" required
+                    <textarea name="descricao" placeholder="Descrição do espaço" required
                         class="h-32 w-full rounded-lg border border-slate-300 px-4 py-3 outline-none focus:border-slate-700"></textarea>
                 </div>
 
                 <div class="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-4">
-                    <label for="imagens" class="mb-3 block text-sm font-semibold text-slate-700">Imagens do espaco</label>
+                    <label for="imagens" class="mb-3 block text-sm font-semibold text-slate-700">Imagens do espaço</label>
                     <input id="imagens" type="file" name="imagens" accept="image/*" multiple required
                         class="block w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-900 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-slate-700">
 
                     <div id="preview-imagens" class="mt-4 grid grid-cols-2 gap-2"></div>
 
                     <button type="submit" class="mt-5 w-full rounded-lg bg-slate-900 px-5 py-3 text-sm font-semibold text-white hover:bg-slate-700">
-                        Salvar Espaco
+                        Salvar Espaço
                     </button>
                 </div>
             </form>
@@ -154,7 +154,7 @@
         </section>
 
         <section id="reservados" class="hidden rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 class="mb-4 text-xl font-bold">Espacos Reservados</h2>
+            <h2 class="mb-4 text-xl font-bold">Espaços Reservados</h2>
 
             {% if alugueis %}
             <div class="space-y-3">
@@ -162,11 +162,11 @@
                 <div class="rounded-lg border border-slate-200 p-4">
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                            <p><strong>Espaco:</strong> {{ aluguel.espaco.nome }}</p>
+                            <p><strong>Espaço:</strong> {{ aluguel.espaco.nome }}</p>
                             <p><strong>Cliente:</strong> {{ aluguel.usuario.nome }}</p>
                             <p><strong>Dia:</strong> {{ aluguel.dia }}</p>
-                            <p><strong>Duracao:</strong> {{ aluguel.duracao }}</p>
-                            <p><strong>Horarios:</strong> {{ aluguel.horarios }}</p>
+                            <p><strong>Duração:</strong> {{ aluguel.duracao }}</p>
+                            <p><strong>Horários:</strong> {{ aluguel.horarios }}</p>
                         </div>
 
                         <form method="POST">
@@ -200,7 +200,7 @@
                 {% endfor %}
             </div>
             {% else %}
-            <p class="text-sm text-slate-500">Nenhum usuario cadastrado.</p>
+            <p class="text-sm text-slate-500">Nenhum usuário cadastrado.</p>
             {% endif %}
         </section>
 
