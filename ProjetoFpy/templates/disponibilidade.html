@@ -61,7 +61,7 @@
 
         <div class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
             <h2 class="mb-2 text-2xl font-bold">Disponibilidade</h2>
-            <p class="mb-5 text-sm text-slate-600">Escolha o dia, a duracao do evento e os horarios desejados.</p>
+            <p class="mb-5 text-sm text-slate-600">Escolha o dia e os horarios desejados.</p>
 
             {% if messages %}
             <div class="mb-5 space-y-2">
@@ -73,28 +73,13 @@
             </div>
             {% endif %}
 
-            <form method="GET" class="mb-5 rounded-lg border border-slate-200 bg-slate-50 p-4">
-                <input type="hidden" name="espaco" value="{{ espaco.id }}">
-                <label for="consulta-dia" class="mb-2 block text-sm font-medium">Consultar horarios por dia</label>
-                <div class="flex flex-col gap-3 sm:flex-row">
-                    <input id="consulta-dia" type="date" name="dia" value="{{ dia_selecionado }}" min="{{ hoje }}" class="h-11 w-full rounded-lg border border-slate-300 px-3 outline-none focus:border-slate-700">
-                    <button type="submit" class="rounded-lg bg-slate-900 px-5 py-2 text-sm font-semibold text-white hover:bg-slate-700">Buscar</button>
-                </div>
-            </form>
-
             <form method="POST" id="form-alugar" class="rounded-lg border border-slate-200 p-4">
                 {% csrf_token %}
                 <input type="hidden" name="espaco_id" value="{{ espaco.id }}">
 
-                <div class="mb-6 grid gap-4 sm:grid-cols-2">
-                    <div>
-                        <label for="dia" class="mb-1 block text-sm font-medium">Dia</label>
-                        <input id="dia" type="date" name="dia" value="{{ dia_selecionado }}" min="{{ hoje }}" required class="h-11 w-full rounded-lg border border-slate-300 px-3 outline-none focus:border-slate-700">
-                    </div>
-                    <div>
-                        <label for="duracao" class="mb-1 block text-sm font-medium">Duracao em horas</label>
-                        <input id="duracao" type="number" name="duracao" min="1" max="24" step="1" placeholder="Ex: 4" required class="h-11 w-full rounded-lg border border-slate-300 px-3 outline-none focus:border-slate-700">
-                    </div>
+                <div class="mb-6">
+                    <label for="dia" class="mb-1 block text-sm font-medium">Dia</label>
+                    <input id="dia" type="date" name="dia" value="{{ dia_selecionado }}" min="{{ hoje }}" required class="h-11 w-full rounded-lg border border-slate-300 px-3 outline-none focus:border-slate-700">
                 </div>
 
                 <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -133,8 +118,8 @@
     let horariosEscolhidos = []
     let ordemHorarios = Array.from(document.querySelectorAll("[data-hora]")).map(btn => btn.dataset.hora)
     let formularioAlugar = document.getElementById("form-alugar")
-    let inputDuracao = document.getElementById("duracao")
     let inputHorarios = document.getElementById("horarios")
+    let inputDia = document.getElementById("dia")
 
     function ordenarHorarios(horarios) {
         return horarios.slice().sort(function (a, b) {
@@ -142,17 +127,16 @@
         })
     }
 
-    function horariosSaoSeguidos(horarios) {
-        let indices = horarios.map(hora => ordemHorarios.indexOf(hora))
-        return indices.every(function (indice, posicao) {
-            return posicao === 0 || indice === indices[posicao - 1] + 1
-        })
-    }
-
     function atualizarCampoHorarios() {
         horariosEscolhidos = ordenarHorarios(horariosEscolhidos)
         inputHorarios.value = horariosEscolhidos.join(",")
     }
+
+    inputDia.addEventListener("change", function () {
+        if (this.value) {
+            window.location.href = "?espaco={{ espaco.id }}&dia=" + this.value
+        }
+    })
 
     document.querySelectorAll(".horario").forEach(function (btn) {
         btn.addEventListener("click", function () {
@@ -173,17 +157,9 @@
     })
 
     formularioAlugar.addEventListener("submit", function (event) {
-        let duracao = parseInt(inputDuracao.value, 10)
-
-        if (horariosEscolhidos.length !== duracao) {
+        if (horariosEscolhidos.length === 0) {
             event.preventDefault()
-            alert("A duracao precisa bater com a quantidade de horarios selecionados.")
-            return
-        }
-
-        if (!horariosSaoSeguidos(horariosEscolhidos)) {
-            event.preventDefault()
-            alert("Escolha horarios seguidos, sem intervalos.")
+            alert("Escolha pelo menos um horario.")
         }
     })
 </script>

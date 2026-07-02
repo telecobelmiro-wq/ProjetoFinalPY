@@ -22,12 +22,12 @@ class LoginTests(TestCase):
     def test_login_usuario_redireciona_para_home(self):
         Usuario.objects.create(
             nome='Maria',
-            cpf='52998224725',
+            email='maria@example.com',
             senha=make_password('senha123'),
         )
 
         response = self.client.post(reverse('login'), {
-            'username': 'Maria',
+            'email': 'maria@example.com',
             'password': 'senha123',
         })
 
@@ -36,23 +36,24 @@ class LoginTests(TestCase):
         self.assertEqual(session.get('usuario_nome'), 'Maria')
         self.assertIsNotNone(session.get('usuario_id'))
 
-    def test_login_por_cpf_tambem_funciona(self):
+    def test_login_por_cpf_nao_funciona_mais(self):
         Usuario.objects.create(
             nome='Joao',
-            cpf='52998224725',
+            email='joao@example.com',
             senha=make_password('senha123'),
         )
 
         response = self.client.post(reverse('login'), {
-            'username': '529.982.247-25',
+            'email': '529.982.247-25',
             'password': 'senha123',
         })
 
-        self.assertRedirects(response, reverse('tela_inicial'))
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNone(self.client.session.get('usuario_id'))
 
     def test_login_admin_redireciona_para_painel(self):
         response = self.client.post(reverse('login'), {
-            'username': 'admin',
+            'email': 'admin',
             'password': 'admin123',
         })
 
@@ -64,7 +65,7 @@ class DisponibilidadeTests(TestCase):
     def setUp(self):
         self.usuario = Usuario.objects.create(
             nome='Maria',
-            cpf='52998224725',
+            email='maria@example.com',
             senha=make_password('senha123'),
         )
         self.espaco = Espaco.objects.create(
@@ -90,43 +91,41 @@ class DisponibilidadeTests(TestCase):
         self.client.post(reverse('disponibilidade'), {
             'espaco_id': self.espaco.id,
             'dia': ontem,
-            'duracao': '1',
             'horarios': '1:00',
         })
 
         self.assertEqual(Aluguel.objects.count(), 0)
 
-    def test_reserva_exige_quantidade_de_horarios_da_duracao(self):
+    def test_reserva_exige_pelo_menos_um_horario(self):
         amanha = (timezone.localdate() + timedelta(days=1)).isoformat()
 
         self.client.post(reverse('disponibilidade'), {
             'espaco_id': self.espaco.id,
             'dia': amanha,
-            'duracao': '2 horas',
-            'horarios': '1:00',
+            'horarios': '',
         })
 
         self.assertEqual(Aluguel.objects.count(), 0)
 
-    def test_reserva_exige_horarios_seguidos(self):
+    def test_reserva_aceita_horarios_nao_seguidos(self):
         amanha = (timezone.localdate() + timedelta(days=1)).isoformat()
 
         self.client.post(reverse('disponibilidade'), {
             'espaco_id': self.espaco.id,
             'dia': amanha,
-            'duracao': '2',
             'horarios': '1:00,3:00',
         })
 
-        self.assertEqual(Aluguel.objects.count(), 0)
+        aluguel = Aluguel.objects.get()
+        self.assertEqual(aluguel.duracao, '2 horas')
+        self.assertEqual(aluguel.horarios, '1:00,3:00')
 
-    def test_reserva_aceita_horarios_seguidos_e_organiza_ordem(self):
+    def test_reserva_calcula_duracao_e_organiza_ordem(self):
         amanha = (timezone.localdate() + timedelta(days=1)).isoformat()
 
         self.client.post(reverse('disponibilidade'), {
             'espaco_id': self.espaco.id,
             'dia': amanha,
-            'duracao': '3 horas',
             'horarios': '3:00,1:00,2:00',
         })
 

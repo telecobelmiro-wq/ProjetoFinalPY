@@ -1,10 +1,10 @@
 from datetime import date
-import re
 
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.hashers import check_password, make_password
-from django.db.models import Q
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 from django.utils import timezone
 from .models import Usuario, Aluguel, Configuracao, Espaco, EspacoImagem
 
@@ -70,18 +70,12 @@ def get_usuario_logado(request):
     return usuario
 
 
-def cpf_eh_valido(cpf):
-    if len(cpf) != 11 or cpf == cpf[0] * 11:
+def email_eh_valido(email):
+    try:
+        validate_email(email)
+    except ValidationError:
         return False
-
-    soma = sum(int(cpf[i]) * (10 - i) for i in range(9))
-    primeiro_digito = (soma * 10 % 11) % 10
-    if primeiro_digito != int(cpf[9]):
-        return False
-
-    soma = sum(int(cpf[i]) * (11 - i) for i in range(10))
-    segundo_digito = (soma * 10 % 11) % 10
-    return segundo_digito == int(cpf[10])
+    return True
 
 
 def imagens_invalidas(imagens):
@@ -218,25 +212,20 @@ def login_view(request):
     if get_usuario_logado(request):
         return redirect('tela_inicial')
 
-    nome = ''
+    email = ''
 
     if request.method == 'POST':
-        nome = request.POST.get('username', '').strip()
+        email = request.POST.get('email', '').strip().lower()
         senha = request.POST.get('password', '').strip()
-        cpf_limpo = ''.join(filter(str.isdigit, nome))
 
-        if not nome or not senha:
-            messages.error(request, "Preencha nome/CPF e senha.")
-        elif nome == 'admin' and senha == 'admin123':
+        if not email or not senha:
+            messages.error(request, "Preencha email e senha.")
+        elif email == 'admin' and senha == 'admin123':
             request.session.flush()
             request.session['admin_logado'] = True
             return redirect('painel_admin')
         else:
-            filtro_usuario = Q(nome__iexact=nome)
-            if cpf_limpo:
-                filtro_usuario |= Q(cpf=cpf_limpo)
-
-            u = Usuario.objects.filter(filtro_usuario).first()
+            u = Usuario.objects.filter(email__iexact=email).first()
 
             if u and check_password(senha, u.senha):
                 request.session.flush()
@@ -244,9 +233,9 @@ def login_view(request):
                 request.session['usuario_nome'] = u.nome
                 return redirect('tela_inicial')
 
-            messages.error(request, "Nome/CPF ou senha invalidos.")
+            messages.error(request, "Email ou senha invalidos.")
 
-    return render(request, 'login.html', {'username': nome})
+    return render(request, 'login.html', {'email': email})
 
 
 def sair_view(request):
@@ -283,17 +272,6 @@ def data_reserva_valida(dia):
         return None
 
 
-def duracao_em_horas(duracao):
-    match = re.fullmatch(r'\s*(\d+)(?:\s*horas?)?\s*', duracao, re.IGNORECASE)
-    if not match:
-        return None
-
-    horas = int(match.group())
-    if horas < 1 or horas > len(HORARIOS):
-        return None
-    return horas
-
-
 def horarios_ordenados(horarios):
     horarios_limpos = [hora.strip() for hora in horarios if hora.strip()]
     if len(horarios_limpos) != len(set(horarios_limpos)):
@@ -303,14 +281,6 @@ def horarios_ordenados(horarios):
         return None
 
     return sorted(horarios_limpos, key=HORARIOS.index)
-
-
-def horarios_sao_seguidos(horarios):
-    if not horarios:
-        return False
-
-    indices = [HORARIOS.index(hora) for hora in horarios]
-    return indices == list(range(indices[0], indices[0] + len(indices)))
 
 
 def texto_duracao(horas):
@@ -326,19 +296,17 @@ def disponibilidade_view(request):
     if request.method == 'POST':
         espaco = Espaco.objects.filter(id=request.POST.get('espaco_id')).first()
         dia = request.POST.get('dia', '').strip()
-        duracao = request.POST.get('duracao', '').strip()
         horarios = request.POST.get('horarios', '').strip()
         horarios_lista = [h for h in horarios.split(',') if h]
         data_reserva = data_reserva_valida(dia)
-        horas_duracao = duracao_em_horas(duracao)
         horarios_lista = horarios_ordenados(horarios_lista)
 
         if not espaco:
             messages.error(request, 'Nao foi possivel encontrar o espaco.')
             return redirect('tela_inicial')
 
-        if not dia or not duracao or not horarios_lista:
-            messages.error(request, 'Preencha o dia, a duracao e escolha pelo menos um horario.')
+        if not dia or not horarios_lista:
+            messages.error(request, 'Escolha o dia e pelo menos um horario.')
             return redirect(f'/disponibilidade/?espaco={espaco.id}')
 
         if not data_reserva:
@@ -349,18 +317,6 @@ def disponibilidade_view(request):
             messages.error(request, 'Nao e possivel reservar em dias que ja passaram.')
             return redirect(f'/disponibilidade/?espaco={espaco.id}')
 
-        if not horas_duracao:
-            messages.error(request, 'Informe a duracao em horas.')
-            return redirect(f'/disponibilidade/?espaco={espaco.id}&dia={dia}')
-
-        if len(horarios_lista) != horas_duracao:
-            messages.error(request, f'A duracao de {texto_duracao(horas_duracao)} precisa ter {horas_duracao} horario(s) selecionado(s).')
-            return redirect(f'/disponibilidade/?espaco={espaco.id}&dia={dia}')
-
-        if not horarios_sao_seguidos(horarios_lista):
-            messages.error(request, 'Escolha horarios seguidos, sem intervalos entre eles.')
-            return redirect(f'/disponibilidade/?espaco={espaco.id}&dia={dia}')
-
         ocupados = pega_horarios_ocupados(espaco, dia)
         conflito = [hora for hora in horarios_lista if hora in ocupados]
 
@@ -370,7 +326,7 @@ def disponibilidade_view(request):
 
         Aluguel.objects.create(
             dia=dia,
-            duracao=texto_duracao(horas_duracao),
+            duracao=texto_duracao(len(horarios_lista)),
             horarios=','.join(horarios_lista),
             usuario=usuario,
             espaco=espaco,
@@ -422,23 +378,22 @@ def cancelar_aluguel_view(request, aluguel_id):
 def cadastro_view(request):
     if request.method == 'POST':
         nome = request.POST.get('nome', '').strip()
-        cpf = request.POST.get('cpf', '')
+        email = request.POST.get('email', '').strip().lower()
         senha = request.POST.get('senha', '').strip()
         confirmar = request.POST.get('confirmar_senha', '').strip()
-        cpf_limpo = ''.join(filter(str.isdigit, cpf))
 
-        if not nome or not cpf_limpo or not senha or not confirmar:
+        if not nome or not email or not senha or not confirmar:
             messages.error(request, "Preencha todos os campos.")
         elif senha != confirmar:
             messages.error(request, "As senhas nao coincidem!")
-        elif not cpf_eh_valido(cpf_limpo):
-            messages.error(request, "CPF invalido.")
-        elif Usuario.objects.filter(cpf=cpf_limpo).exists():
-            messages.error(request, "CPF ja cadastrado.")
+        elif not email_eh_valido(email):
+            messages.error(request, "Email invalido.")
+        elif Usuario.objects.filter(email__iexact=email).exists():
+            messages.error(request, "Email ja cadastrado.")
         elif Usuario.objects.filter(nome__iexact=nome).exists():
-            messages.error(request, "Nome ja cadastrado. Use outro nome ou entre pelo CPF.")
+            messages.error(request, "Nome ja cadastrado. Use outro nome ou entre pelo email.")
         else:
-            Usuario.objects.create(nome=nome, cpf=cpf_limpo, senha=make_password(senha))
+            Usuario.objects.create(nome=nome, email=email, senha=make_password(senha))
             messages.success(request, "Cadastro realizado. Agora voce ja pode entrar.")
             return redirect('login')
 

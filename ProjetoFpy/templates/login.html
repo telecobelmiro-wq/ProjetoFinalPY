@@ -31,8 +31,8 @@
             {% csrf_token %}
 
             <div>
-                <label for="username" class="mb-2 block text-sm font-medium">Nome ou CPF</label>
-                <input id="username" type="text" name="username" value="{{ username|default:'' }}" required
+                <label for="email" class="mb-2 block text-sm font-medium">Email</label>
+                <input id="email" type="text" name="email" value="{{ email|default:'' }}" inputmode="email" required
                     class="h-12 w-full rounded-lg border border-slate-300 px-4 outline-none focus:border-slate-700">
             </div>
 
