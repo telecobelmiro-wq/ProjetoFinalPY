@@ -9,12 +9,7 @@ from django.utils import timezone
 from .models import Usuario, Aluguel, Configuracao, Espaco, EspacoImagem
 
 
-HORARIOS = [
-    '1:00', '2:00', '3:00', '4:00', '5:00', '6:00',
-    '7:00', '8:00', '9:00', '10:00', '11:00', '12:00',
-    '13:00', '14:00', '15:00', '16:00', '17:00', '18:00',
-    '19:00', '20:00', '21:00', '22:00', '23:00', '00:00',
-]
+HORARIOS = [f'{hora:02d}:00' for hora in range(1, 24)] + ['00:00']
 
 
 ESPACO_PADRAO_CHAVE = 'espaco_padrao_criado'
@@ -252,13 +247,30 @@ def descricao_view(request):
     return render(request, 'descricao.html', {'espaco': espaco})
 
 
+def normalizar_horario(hora):
+    partes = hora.strip().split(':')
+
+    if len(partes) != 2 or partes[1] != '00':
+        return ''
+
+    try:
+        numero_hora = int(partes[0])
+    except ValueError:
+        return ''
+
+    if numero_hora < 0 or numero_hora > 23:
+        return ''
+
+    return f'{numero_hora:02d}:00'
+
+
 def pega_horarios_ocupados(espaco, dia):
     ocupados = []
     alugueis = Aluguel.objects.filter(espaco=espaco, dia=dia)
 
     for aluguel in alugueis:
         for hora in aluguel.horarios.split(','):
-            hora = hora.strip()
+            hora = normalizar_horario(hora)
             if hora and hora not in ocupados:
                 ocupados.append(hora)
 
@@ -272,19 +284,29 @@ def data_reserva_valida(dia):
         return None
 
 
-def horarios_ordenados(horarios):
-    horarios_limpos = [hora.strip() for hora in horarios if hora.strip()]
-    if len(horarios_limpos) != len(set(horarios_limpos)):
+def horario_reserva_valido(horarios):
+    horarios_limpos = []
+
+    for hora in horarios:
+        if not hora.strip():
+            continue
+
+        horario = normalizar_horario(hora)
+        if not horario or horario not in HORARIOS or horario in horarios_limpos:
+            return None
+
+        horarios_limpos.append(horario)
+
+    if not horarios_limpos:
         return None
 
-    if any(hora not in HORARIOS for hora in horarios_limpos):
+    posicoes = sorted(HORARIOS.index(horario) for horario in horarios_limpos)
+    sequencia = list(range(posicoes[0], posicoes[-1] + 1))
+
+    if posicoes != sequencia:
         return None
 
-    return sorted(horarios_limpos, key=HORARIOS.index)
-
-
-def texto_duracao(horas):
-    return f'{horas} hora' if horas == 1 else f'{horas} horas'
+    return [HORARIOS[posicao] for posicao in posicoes]
 
 
 def disponibilidade_view(request):
@@ -297,16 +319,19 @@ def disponibilidade_view(request):
         espaco = Espaco.objects.filter(id=request.POST.get('espaco_id')).first()
         dia = request.POST.get('dia', '').strip()
         horarios = request.POST.get('horarios', '').strip()
-        horarios_lista = [h for h in horarios.split(',') if h]
         data_reserva = data_reserva_valida(dia)
-        horarios_lista = horarios_ordenados(horarios_lista)
+        horarios_lista = horario_reserva_valido(horarios.split(','))
 
         if not espaco:
             messages.error(request, 'Nao foi possivel encontrar o espaco.')
             return redirect('tela_inicial')
 
-        if not dia or not horarios_lista:
-            messages.error(request, 'Escolha o dia e pelo menos um horario.')
+        if not dia:
+            messages.error(request, 'Escolha o dia da reserva.')
+            return redirect(f'/disponibilidade/?espaco={espaco.id}')
+
+        if not horarios_lista:
+            messages.error(request, 'Escolha horarios seguidos, sem intervalos entre eles.')
             return redirect(f'/disponibilidade/?espaco={espaco.id}')
 
         if not data_reserva:
@@ -326,7 +351,6 @@ def disponibilidade_view(request):
 
         Aluguel.objects.create(
             dia=dia,
-            duracao=texto_duracao(len(horarios_lista)),
             horarios=','.join(horarios_lista),
             usuario=usuario,
             espaco=espaco,

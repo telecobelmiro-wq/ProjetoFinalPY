@@ -8,23 +8,24 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="flex min-h-screen items-center justify-center bg-slate-100 p-5 text-slate-900">
+<body class="flex min-h-screen items-center justify-center bg-slate-950 p-5 text-slate-100">
 
-    <main class="w-full max-w-md rounded-lg border border-slate-200 bg-white p-8 shadow-sm">
+    <main class="w-full max-w-md rounded-lg border border-sky-200/30 bg-slate-900 p-8 shadow-xl shadow-slate-950/40">
 
-        <a href="{% url 'login' %}" class="inline-flex rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-50">
+        <a href="{% url 'login' %}" class="inline-flex rounded-lg border border-sky-300/40 px-4 py-2 text-sm font-semibold text-sky-100 hover:bg-sky-400/10">
             Voltar
         </a>
 
-        <h1 class="mt-8 text-center text-4xl font-bold">
+        <p class="mt-8 text-center text-xs font-bold uppercase tracking-wide text-sky-300">Dubai Eventos</p>
+        <h1 class="mt-2 text-center text-4xl font-bold text-white">
             PartySpace
         </h1>
-        <p class="mt-2 text-center text-sm text-slate-500">Crie sua conta</p>
+        <p class="mt-2 text-center text-sm text-slate-300">Crie sua conta</p>
 
         {% if messages %}
         <div class="mt-6 space-y-2">
             {% for message in messages %}
-            <div class="rounded-lg border px-4 py-3 text-sm {% if message.tags == 'success' %}border-green-200 bg-green-50 text-green-800{% else %}border-red-200 bg-red-50 text-red-700{% endif %}">
+            <div class="rounded-lg border px-4 py-3 text-sm {% if message.tags == 'success' %}border-sky-300/40 bg-sky-400/10 text-sky-100{% else %}border-red-300/40 bg-red-950/70 text-red-100{% endif %}">
                 {{ message }}
             </div>
             {% endfor %}
@@ -35,27 +36,27 @@
             {% csrf_token %}
 
             <div>
-                <label for="nome" class="mb-2 block text-sm font-medium">Nome</label>
-                <input id="nome" type="text" name="nome" required class="h-12 w-full rounded-lg border border-slate-300 px-4 outline-none focus:border-slate-700">
+                <label for="nome" class="mb-2 block text-sm font-semibold text-sky-100">Nome</label>
+                <input id="nome" type="text" name="nome" required class="h-12 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 text-slate-100 outline-none focus:border-sky-300">
             </div>
 
             <div>
-                <label for="email" class="mb-2 block text-sm font-medium">Email</label>
-                <input id="email" type="email" name="email" required class="h-12 w-full rounded-lg border border-slate-300 px-4 outline-none focus:border-slate-700">
+                <label for="email" class="mb-2 block text-sm font-semibold text-sky-100">Email</label>
+                <input id="email" type="email" name="email" required class="h-12 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 text-slate-100 outline-none focus:border-sky-300">
             </div>
 
             <div>
-                <label for="senha" class="mb-2 block text-sm font-medium">Senha</label>
-                <input id="senha" type="password" name="senha" required class="h-12 w-full rounded-lg border border-slate-300 px-4 outline-none focus:border-slate-700">
+                <label for="senha" class="mb-2 block text-sm font-semibold text-sky-100">Senha</label>
+                <input id="senha" type="password" name="senha" required class="h-12 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 text-slate-100 outline-none focus:border-sky-300">
             </div>
 
             <div>
-                <label for="confirmar_senha" class="mb-2 block text-sm font-medium">Confirmar senha</label>
+                <label for="confirmar_senha" class="mb-2 block text-sm font-semibold text-sky-100">Confirmar senha</label>
                 <input id="confirmar_senha" type="password" name="confirmar_senha" required
-                    class="h-12 w-full rounded-lg border border-slate-300 px-4 outline-none focus:border-slate-700">
+                    class="h-12 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 text-slate-100 outline-none focus:border-sky-300">
             </div>
 
-            <button type="submit" class="w-full rounded-lg bg-slate-900 py-3 text-sm font-semibold text-white hover:bg-slate-700">
+            <button type="submit" class="w-full rounded-lg bg-sky-400 py-3 text-sm font-bold text-slate-950 shadow-lg shadow-sky-500/20 hover:bg-sky-300">
                 Cadastre-se
             </button>
         </form>

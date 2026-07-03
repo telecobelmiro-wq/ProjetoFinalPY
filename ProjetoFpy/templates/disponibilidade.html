@@ -3,12 +3,12 @@
 {% load static %}
 
 <main class="mx-auto max-w-5xl">
-    <a href="{% url 'descricao' %}?espaco={{ espaco.id }}" class="inline-flex rounded-lg border border-slate-300 bg-white px-5 py-2 text-sm font-medium hover:bg-slate-50">
+    <a href="{% url 'descricao' %}?espaco={{ espaco.id }}" class="inline-flex rounded-lg border border-sky-300 bg-slate-950 px-5 py-2 text-sm font-semibold text-sky-100 shadow-sm hover:bg-slate-900">
         Voltar
     </a>
 
     <section class="mt-5 grid gap-5 lg:grid-cols-[360px_1fr]">
-        <aside class="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+        <aside class="overflow-hidden rounded-lg border border-sky-200/30 bg-slate-950 text-slate-100 shadow-xl shadow-slate-900/10">
             {% with imagens=espaco.imagens.all %}
             {% if imagens %}
             <div id="carouselReserva" class="carousel slide">
@@ -54,42 +54,50 @@
             {% endwith %}
 
             <div class="p-5">
+                <p class="mb-2 inline-flex rounded-full border border-sky-300/40 bg-sky-400/10 px-3 py-1 text-xs font-semibold text-sky-200">
+                    Reserva por horario
+                </p>
                 <h1 class="text-2xl font-bold">{{ espaco.nome }}</h1>
-                <p class="mt-2 text-sm text-slate-600">{{ espaco.endereco }}</p>
+                <p class="mt-2 text-sm text-slate-300">{{ espaco.endereco }}</p>
             </div>
         </aside>
 
-        <div class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="rounded-lg border border-sky-200/30 bg-slate-950 p-5 text-slate-100 shadow-xl shadow-slate-900/10">
             <h2 class="mb-2 text-2xl font-bold">Disponibilidade</h2>
-            <p class="mb-5 text-sm text-slate-600">Escolha o dia, a duração do evento e os horarios desejados.</p>
+            <p class="mb-5 text-sm text-slate-300">Escolha o dia no calendario e marque um bloco de horarios seguidos.</p>
 
             {% if messages %}
             <div class="mb-5 space-y-2">
                 {% for message in messages %}
-                <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                <div class="rounded-lg border border-red-300/40 bg-red-950/70 px-4 py-3 text-sm text-red-100">
                     {{ message }}
                 </div>
                 {% endfor %}
             </div>
             {% endif %}
 
-            <form method="POST" id="form-alugar" class="rounded-lg border border-slate-200 p-4">
+            <form method="POST" id="form-alugar" class="rounded-lg border border-sky-200/20 bg-slate-900 p-4">
                 {% csrf_token %}
                 <input type="hidden" name="espaco_id" value="{{ espaco.id }}">
 
                 <div class="mb-6">
-                    <label for="dia" class="mb-1 block text-sm font-medium">Dia</label>
-                    <input id="dia" type="date" name="dia" value="{{ dia_selecionado }}" min="{{ hoje }}" required class="h-11 w-full rounded-lg border border-slate-300 px-3 outline-none focus:border-slate-700">
+                    <label for="dia" class="mb-1 block text-sm font-semibold text-sky-100">Data da festa</label>
+                    <input id="dia" type="date" name="dia" value="{{ dia_selecionado }}" min="{{ hoje }}" required class="h-11 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 text-slate-100 outline-none focus:border-sky-300">
+                </div>
+
+                <div class="mb-3 flex items-center justify-between gap-3">
+                    <label class="text-sm font-semibold text-sky-100">Horarios</label>
+                    <span class="text-xs text-slate-400">Selecione horarios seguidos</span>
                 </div>
 
                 <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
                     {% for hora in horarios %}
                     {% if hora in ocupados %}
-                    <button type="button" disabled class="h-11 rounded-lg border border-red-200 bg-red-50 text-sm text-red-700 line-through cursor-not-allowed" data-hora="{{ hora }}">
+                    <button type="button" disabled class="h-11 rounded-lg border border-red-400/40 bg-red-950/70 text-sm text-red-200 line-through cursor-not-allowed" data-hora="{{ hora }}">
                         {{ hora }}
                     </button>
                     {% else %}
-                    <button type="button" class="horario h-11 rounded-lg border border-emerald-200 bg-emerald-50 text-sm font-medium text-emerald-800 hover:border-emerald-400" data-hora="{{ hora }}">
+                    <button type="button" class="horario h-11 rounded-lg border border-sky-400 bg-slate-950 text-sm font-semibold text-sky-100 transition hover:bg-sky-950" data-hora="{{ hora }}">
                         {{ hora }}
                     </button>
                     {% endif %}
@@ -97,15 +105,18 @@
                 </div>
 
                 <input type="hidden" id="horarios" name="horarios">
+                <p id="resumo-horarios" class="mt-4 rounded-lg border border-sky-300/20 bg-slate-950 px-4 py-3 text-sm font-semibold text-sky-100">
+                    Nenhum horario selecionado
+                </p>
 
                 <div class="mt-5 flex flex-wrap items-center justify-between gap-4">
-                    <div class="flex gap-3 text-sm">
-                        <span class="text-emerald-700">Disponivel</span>
-                        <span class="text-red-600 line-through">Ocupado</span>
-                        <span class="rounded bg-slate-900 px-2 text-white">Selecionado</span>
+                    <div class="flex flex-wrap gap-3 text-sm">
+                        <span class="text-sky-200">Disponivel</span>
+                        <span class="text-red-300 line-through">Ocupado</span>
+                        <span class="rounded bg-sky-400 px-2 font-semibold text-slate-950">Selecionado</span>
                     </div>
 
-                    <button id="alugar" type="submit" class="rounded-lg bg-slate-900 px-8 py-3 text-sm font-semibold text-white hover:bg-slate-700">
+                    <button id="alugar" type="submit" class="rounded-lg bg-sky-400 px-8 py-3 text-sm font-bold text-slate-950 shadow-lg shadow-sky-500/20 hover:bg-sky-300">
                         Alugar
                     </button>
                 </div>
@@ -116,20 +127,61 @@
 
 <script>
     let horariosEscolhidos = []
-    let ordemHorarios = Array.from(document.querySelectorAll("[data-hora]")).map(btn => btn.dataset.hora)
     let formularioAlugar = document.getElementById("form-alugar")
     let inputHorarios = document.getElementById("horarios")
     let inputDia = document.getElementById("dia")
+    let resumoHorarios = document.getElementById("resumo-horarios")
+    let botoesHorarios = Array.from(document.querySelectorAll(".horario"))
+    let ordemHorarios = Array.from(document.querySelectorAll("[data-hora]")).map(function (botao) {
+        return botao.dataset.hora
+    })
 
-    function ordenarHorarios(horarios) {
-        return horarios.slice().sort(function (a, b) {
+    function ordenar(lista) {
+        return lista.sort(function (a, b) {
             return ordemHorarios.indexOf(a) - ordemHorarios.indexOf(b)
         })
     }
 
-    function atualizarCampoHorarios() {
-        horariosEscolhidos = ordenarHorarios(horariosEscolhidos)
+    function horariosSeguidos(lista) {
+        let posicoes = ordenar(lista.map(function (hora) {
+            return hora
+        })).map(function (hora) {
+            return ordemHorarios.indexOf(hora)
+        })
+
+        for (let i = 1; i < posicoes.length; i++) {
+            if (posicoes[i] !== posicoes[i - 1] + 1) {
+                return false
+            }
+        }
+
+        return true
+    }
+
+    function atualizarTela() {
+        ordenar(horariosEscolhidos)
         inputHorarios.value = horariosEscolhidos.join(",")
+
+        botoesHorarios.forEach(function (botao) {
+            let escolhido = horariosEscolhidos.includes(botao.dataset.hora)
+            botao.classList.toggle("border-sky-300", escolhido)
+            botao.classList.toggle("bg-sky-400", escolhido)
+            botao.classList.toggle("text-slate-950", escolhido)
+            botao.classList.toggle("shadow-lg", escolhido)
+            botao.classList.toggle("shadow-sky-500/30", escolhido)
+            botao.classList.toggle("border-sky-400", !escolhido)
+            botao.classList.toggle("bg-slate-950", !escolhido)
+            botao.classList.toggle("text-sky-100", !escolhido)
+            botao.classList.toggle("hover:bg-sky-950", !escolhido)
+        })
+
+        if (horariosEscolhidos.length === 0) {
+            resumoHorarios.textContent = "Nenhum horario selecionado"
+        } else if (horariosEscolhidos.length === 1) {
+            resumoHorarios.textContent = "Selecionado: " + horariosEscolhidos[0]
+        } else {
+            resumoHorarios.textContent = "Intervalo: " + horariosEscolhidos[0] + " - " + horariosEscolhidos[horariosEscolhidos.length - 1]
+        }
     }
 
     inputDia.addEventListener("change", function () {
@@ -138,25 +190,36 @@
         }
     })
 
-    document.querySelectorAll(".horario").forEach(function (btn) {
-        btn.addEventListener("click", function () {
+    botoesHorarios.forEach(function (botao) {
+        botao.addEventListener("click", function () {
             let hora = this.dataset.hora
+            let novaLista
 
             if (horariosEscolhidos.includes(hora)) {
-                horariosEscolhidos = horariosEscolhidos.filter(h => h != hora)
-                this.classList.remove("bg-slate-900", "text-white", "border-slate-900")
-                this.classList.add("bg-emerald-50", "text-emerald-800", "border-emerald-200")
+                novaLista = horariosEscolhidos.filter(function (horario) {
+                    return horario !== hora
+                })
             } else {
-                horariosEscolhidos.push(hora)
-                this.classList.remove("bg-emerald-50", "text-emerald-800", "border-emerald-200")
-                this.classList.add("bg-slate-900", "text-white", "border-slate-900")
+                novaLista = horariosEscolhidos.concat(hora)
             }
 
-            atualizarCampoHorarios()
+            if (!horariosSeguidos(novaLista)) {
+                alert("Escolha horarios seguidos, sem intervalo entre eles.")
+                return
+            }
+
+            horariosEscolhidos = novaLista
+            atualizarTela()
         })
     })
 
     formularioAlugar.addEventListener("submit", function (event) {
+        if (!inputDia.value) {
+            event.preventDefault()
+            alert("Escolha a data da festa.")
+            return
+        }
+
         if (horariosEscolhidos.length === 0) {
             event.preventDefault()
             alert("Escolha pelo menos um horario.")

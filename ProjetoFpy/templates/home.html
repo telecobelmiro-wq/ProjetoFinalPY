@@ -9,19 +9,20 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="min-h-screen bg-slate-100 p-5 text-slate-900">
+<body class="min-h-screen bg-slate-950 p-5 text-slate-100">
 
     <main class="mx-auto max-w-5xl">
 
-        <header class="mb-6 flex flex-col gap-4 rounded-lg border border-slate-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+        <header class="mb-6 flex flex-col gap-4 rounded-lg border border-sky-200/30 bg-slate-900 p-5 shadow-xl shadow-slate-950/30 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="text-3xl font-bold">PartySpace</h1>
-                <p class="text-sm text-slate-500">Espaços disponiveis para eventos</p>
+                <p class="mb-1 text-xs font-bold uppercase tracking-wide text-sky-300">Dubai Eventos</p>
+                <h1 class="text-3xl font-bold text-white">PartySpace</h1>
+                <p class="text-sm text-slate-300">Espacos disponiveis para eventos</p>
             </div>
 
             <div class="flex items-center gap-3">
-                <span class="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium">{{ usuario_nome }}</span>
-                <a href="{% url 'sair' %}" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-50">
+                <span class="rounded-full border border-sky-300/30 bg-sky-400/10 px-4 py-2 text-sm font-semibold text-sky-100">{{ usuario_nome }}</span>
+                <a href="{% url 'sair' %}" class="rounded-lg border border-sky-300/40 px-4 py-2 text-sm font-semibold text-sky-100 hover:bg-sky-400/10">
                     Sair
                 </a>
             </div>
@@ -30,29 +31,29 @@
         {% if messages %}
         <div class="mb-5 space-y-2">
             {% for message in messages %}
-            <div class="rounded-lg border px-4 py-3 text-sm {% if message.tags == 'success' %}border-green-200 bg-green-50 text-green-800{% else %}border-red-200 bg-red-50 text-red-700{% endif %}">
+            <div class="rounded-lg border px-4 py-3 text-sm {% if message.tags == 'success' %}border-sky-300/40 bg-sky-400/10 text-sky-100{% else %}border-red-300/40 bg-red-950/70 text-red-100{% endif %}">
                 {{ message }}
             </div>
             {% endfor %}
         </div>
         {% endif %}
 
-        <section class="mb-6 rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-            <label for="filtro" class="mb-2 block text-sm font-medium text-slate-700">Filtrar por endereço</label>
-            <input id="filtro" type="text" placeholder="Digite um endereço"
-                class="h-11 w-full rounded-lg border border-slate-300 px-4 outline-none focus:border-slate-700">
+        <section class="mb-6 rounded-lg border border-sky-200/20 bg-slate-900 p-5 shadow-lg shadow-slate-950/20">
+            <label for="filtro" class="mb-2 block text-sm font-semibold text-sky-100">Filtrar por endereco</label>
+            <input id="filtro" type="text" placeholder="Digite um endereco"
+                class="h-11 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 text-slate-100 outline-none placeholder:text-slate-500 focus:border-sky-300">
         </section>
 
         <section class="grid gap-5 lg:grid-cols-[1fr_320px]">
-            <div class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-                <h2 class="mb-4 text-2xl font-bold">Espaços disponiveis</h2>
+            <div class="rounded-lg border border-sky-200/20 bg-slate-900 p-5 shadow-lg shadow-slate-950/20">
+                <h2 class="mb-4 text-2xl font-bold text-white">Espacos disponiveis</h2>
 
                 <div class="grid gap-4 sm:grid-cols-2">
                     {% for espaco in espacos %}
                     <a href="{% url 'descricao' %}?espaco={{ espaco.id }}"
-                        class="espaco-card overflow-hidden rounded-lg border border-slate-200 bg-white transition hover:-translate-y-0.5 hover:border-slate-400 hover:shadow-md"
+                        class="espaco-card overflow-hidden rounded-lg border border-slate-700 bg-slate-950 transition hover:-translate-y-0.5 hover:border-sky-300 hover:shadow-lg hover:shadow-sky-500/10"
                         data-end="{{ espaco.endereco|lower }}">
-                        <div class="aspect-[16/10] bg-slate-200">
+                        <div class="aspect-[16/10] bg-slate-800">
                             {% with foto=espaco.imagens.first %}
                             {% if foto %}
                             <img src="{{ foto.imagem.url }}" alt="{{ espaco.nome }}" class="h-full w-full object-cover">
@@ -63,47 +64,48 @@
                         </div>
                         <div class="p-4">
                             <div class="mb-3 flex items-start justify-between gap-3">
-                                <p class="font-bold">{{ espaco.nome }}</p>
+                                <p class="font-bold text-white">{{ espaco.nome }}</p>
                                 {% if espaco.id in alugados %}
-                                <span class="shrink-0 rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-800">
+                                <span class="shrink-0 rounded-full border border-amber-300/30 bg-amber-400/10 px-3 py-1 text-xs font-semibold text-amber-200">
                                     Reservado
                                 </span>
                                 {% else %}
-                                <span class="shrink-0 rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-800">
+                                <span class="shrink-0 rounded-full border border-sky-300/40 bg-sky-400/10 px-3 py-1 text-xs font-semibold text-sky-100">
                                     Disponivel
                                 </span>
                                 {% endif %}
                             </div>
-                            <p class="line-clamp-2 text-sm text-slate-600">{{ espaco.endereco }}</p>
+                            <p class="line-clamp-2 text-sm text-slate-300">{{ espaco.endereco }}</p>
                         </div>
                     </a>
                     {% empty %}
-                    <p class="text-sm text-slate-500">Nenhum espaco cadastrado.</p>
+                    <p class="text-sm text-slate-400">Nenhum espaco cadastrado.</p>
                     {% endfor %}
                 </div>
             </div>
 
-            <aside class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-                <h2 class="mb-4 text-xl font-bold">Minhas reservas</h2>
+            <aside class="rounded-lg border border-sky-200/30 bg-slate-900 p-5 shadow-xl shadow-slate-950/30">
+                <h2 class="mb-4 text-xl font-bold text-white">Minhas reservas</h2>
 
                 {% if meus_alugueis %}
                 <div class="space-y-3">
                     {% for aluguel in meus_alugueis %}
-                    <div class="rounded-lg border border-slate-200 p-4">
-                        <p class="font-bold">{{ aluguel.espaco.nome }}</p>
-                        <p class="mt-2 text-sm text-slate-600">Dia: {{ aluguel.dia }}</p>
-                        <p class="text-sm text-slate-600">Duracao: {{ aluguel.duracao }}</p>
-                        <p class="text-sm text-slate-600 break-all">Horarios: {{ aluguel.horarios }}</p>
+                    <div class="rounded-lg border border-sky-300/20 bg-slate-950 p-4">
+                        <p class="font-bold text-white">{{ aluguel.espaco.nome }}</p>
+                        <p class="mt-2 text-sm text-slate-300">Dia: {{ aluguel.dia }}</p>
+                        <p class="mt-2 inline-flex rounded-full bg-sky-400 px-3 py-1 text-sm font-bold text-slate-950">
+                            Horario: {{ aluguel.horario_formatado }}
+                        </p>
 
                         <a href="{% url 'cancelar_aluguel' aluguel.id %}"
-                            class="mt-4 inline-flex rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-50">
+                            class="mt-4 inline-flex rounded-lg border border-sky-300/40 px-4 py-2 text-sm font-semibold text-sky-100 hover:bg-sky-400/10">
                             Cancelar
                         </a>
                     </div>
                     {% endfor %}
                 </div>
                 {% else %}
-                <p class="text-sm text-slate-500">Voce ainda nao possui reservas cadastradas.</p>
+                <p class="text-sm text-slate-400">Voce ainda nao possui reservas cadastradas.</p>
                 {% endif %}
             </aside>
         </section>

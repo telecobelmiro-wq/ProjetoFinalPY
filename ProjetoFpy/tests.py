@@ -107,31 +107,29 @@ class DisponibilidadeTests(TestCase):
 
         self.assertEqual(Aluguel.objects.count(), 0)
 
-    def test_reserva_aceita_horarios_nao_seguidos(self):
+    def test_reserva_rejeita_horarios_com_intervalo(self):
         amanha = (timezone.localdate() + timedelta(days=1)).isoformat()
 
         self.client.post(reverse('disponibilidade'), {
             'espaco_id': self.espaco.id,
             'dia': amanha,
-            'horarios': '1:00,3:00',
+            'horarios': '09:00,11:00',
         })
 
-        aluguel = Aluguel.objects.get()
-        self.assertEqual(aluguel.duracao, '2 horas')
-        self.assertEqual(aluguel.horarios, '1:00,3:00')
+        self.assertEqual(Aluguel.objects.count(), 0)
 
-    def test_reserva_calcula_duracao_e_organiza_ordem(self):
+    def test_reserva_aceita_horarios_seguidos_e_salva_formatado(self):
         amanha = (timezone.localdate() + timedelta(days=1)).isoformat()
 
         self.client.post(reverse('disponibilidade'), {
             'espaco_id': self.espaco.id,
             'dia': amanha,
-            'horarios': '3:00,1:00,2:00',
+            'horarios': '9:00,10:00,11:00',
         })
 
         aluguel = Aluguel.objects.get()
-        self.assertEqual(aluguel.duracao, '3 horas')
-        self.assertEqual(aluguel.horarios, '1:00,2:00,3:00')
+        self.assertEqual(aluguel.horarios, '09:00,10:00,11:00')
+        self.assertEqual(aluguel.horario_formatado, '09:00 - 11:00')
 
 
 class PainelAdminTests(TestCase):

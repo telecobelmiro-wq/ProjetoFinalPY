@@ -9,19 +9,20 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="min-h-screen bg-slate-100 p-5 text-slate-900">
+<body class="min-h-screen bg-slate-950 p-5 text-slate-100">
 
     <main class="mx-auto max-w-5xl">
 
-        <header class="mb-6 flex flex-col gap-4 rounded-lg border border-slate-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+        <header class="mb-6 flex flex-col gap-4 rounded-lg border border-sky-200/30 bg-slate-900 p-5 shadow-xl shadow-slate-950/30 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h1 class="text-3xl font-bold">PartySpace</h1>
-                <p class="text-sm text-slate-500">Painel administrativo</p>
+                <p class="mb-1 text-xs font-bold uppercase tracking-wide text-sky-300">Dubai Eventos</p>
+                <h1 class="text-3xl font-bold text-white">PartySpace</h1>
+                <p class="text-sm text-slate-300">Painel administrativo</p>
             </div>
 
             <div class="flex items-center gap-3">
-                <span class="rounded-full bg-slate-100 px-4 py-2 text-sm font-medium">Administrador</span>
-                <a href="{% url 'sair' %}" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-50">
+                <span class="rounded-full border border-sky-300/30 bg-sky-400/10 px-4 py-2 text-sm font-semibold text-sky-100">Administrador</span>
+                <a href="{% url 'sair' %}" class="rounded-lg border border-sky-300/40 px-4 py-2 text-sm font-semibold text-sky-100 hover:bg-sky-400/10">
                     Sair
                 </a>
             </div>
@@ -30,7 +31,7 @@
         {% if messages %}
         <div class="mb-5 space-y-2">
             {% for message in messages %}
-            <div class="rounded-lg border px-4 py-3 text-sm {% if message.tags == 'success' %}border-green-200 bg-green-50 text-green-800{% else %}border-red-200 bg-red-50 text-red-700{% endif %}">
+            <div class="rounded-lg border px-4 py-3 text-sm {% if message.tags == 'success' %}border-sky-300/40 bg-sky-400/10 text-sky-100{% else %}border-red-300/40 bg-red-950/70 text-red-100{% endif %}">
                 {{ message }}
             </div>
             {% endfor %}
@@ -38,55 +39,55 @@
         {% endif %}
 
         <section class="mb-6 grid gap-3 sm:grid-cols-3">
-            <button type="button" id="btn-cadastrar" class="rounded-lg border border-slate-300 bg-white px-4 py-4 text-left font-semibold shadow-sm hover:border-slate-500">
-                Cadastrar Espaço
+            <button type="button" id="btn-cadastrar" class="aba rounded-lg border border-sky-300 bg-sky-400 px-4 py-4 text-left font-bold text-slate-950 shadow-lg shadow-sky-500/20">
+                Cadastrar Espaco
             </button>
 
-            <button type="button" id="btn-reservados" class="rounded-lg border border-slate-300 bg-white px-4 py-4 text-left font-semibold shadow-sm hover:border-slate-500">
-                Espaços Reservados
+            <button type="button" id="btn-reservados" class="aba rounded-lg border border-sky-300/30 bg-slate-900 px-4 py-4 text-left font-semibold text-sky-100 shadow-sm hover:bg-sky-400/10">
+                Espacos Reservados
             </button>
 
-            <button type="button" id="btn-clientes" class="rounded-lg border border-slate-300 bg-white px-4 py-4 text-left font-semibold shadow-sm hover:border-slate-500">
+            <button type="button" id="btn-clientes" class="aba rounded-lg border border-sky-300/30 bg-slate-900 px-4 py-4 text-left font-semibold text-sky-100 shadow-sm hover:bg-sky-400/10">
                 Clientes
             </button>
         </section>
 
-        <section id="cadastro-espaco" class="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 class="mb-4 text-xl font-bold">Cadastrar Espaço</h2>
+        <section id="cadastro-espaco" class="rounded-lg border border-sky-200/30 bg-slate-900 p-5 shadow-xl shadow-slate-950/30">
+            <h2 class="mb-4 text-xl font-bold text-white">Cadastrar Espaco</h2>
 
             <form method="POST" enctype="multipart/form-data" class="grid gap-4 lg:grid-cols-[1fr_280px]">
                 {% csrf_token %}
                 <div class="space-y-4">
-                    <input type="text" name="nome" placeholder="Nome do espaço" required
-                        class="h-11 w-full rounded-lg border border-slate-300 px-4 outline-none focus:border-slate-700">
+                    <input type="text" name="nome" placeholder="Nome do espaco" required
+                        class="h-11 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 text-slate-100 outline-none placeholder:text-slate-500 focus:border-sky-300">
 
-                    <input type="text" name="endereco" placeholder="Endereço" required
-                        class="h-11 w-full rounded-lg border border-slate-300 px-4 outline-none focus:border-slate-700">
+                    <input type="text" name="endereco" placeholder="Endereco" required
+                        class="h-11 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 text-slate-100 outline-none placeholder:text-slate-500 focus:border-sky-300">
 
-                    <textarea name="descricao" placeholder="Descrição do espaço" required
-                        class="h-32 w-full rounded-lg border border-slate-300 px-4 py-3 outline-none focus:border-slate-700"></textarea>
+                    <textarea name="descricao" placeholder="Descricao do espaco" required
+                        class="h-32 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none placeholder:text-slate-500 focus:border-sky-300"></textarea>
                 </div>
 
-                <div class="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-4">
-                    <label for="imagens" class="mb-3 block text-sm font-semibold text-slate-700">Imagens do espaço</label>
+                <div class="rounded-lg border border-dashed border-sky-300/40 bg-slate-950 p-4">
+                    <label for="imagens" class="mb-3 block text-sm font-semibold text-sky-100">Imagens do espaco</label>
                     <input id="imagens" type="file" name="imagens" accept="image/*" multiple required
-                        class="block w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-900 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-slate-700">
+                        class="block w-full text-sm text-slate-300 file:mr-3 file:rounded-lg file:border-0 file:bg-sky-400 file:px-4 file:py-2 file:text-sm file:font-bold file:text-slate-950 hover:file:bg-sky-300">
 
                     <div id="preview-imagens" class="mt-4 grid grid-cols-2 gap-2"></div>
 
-                    <button type="submit" class="mt-5 w-full rounded-lg bg-slate-900 px-5 py-3 text-sm font-semibold text-white hover:bg-slate-700">
-                        Salvar Espaço
+                    <button type="submit" class="mt-5 w-full rounded-lg bg-sky-400 px-5 py-3 text-sm font-bold text-slate-950 shadow-lg shadow-sky-500/20 hover:bg-sky-300">
+                        Salvar Espaco
                     </button>
                 </div>
             </form>
 
-            <h3 class="mb-3 mt-8 text-lg font-bold">Espacos Cadastrados</h3>
+            <h3 class="mb-3 mt-8 text-lg font-bold text-white">Espacos Cadastrados</h3>
             {% if espacos %}
             <div class="grid gap-3 sm:grid-cols-2">
                 {% for espaco in espacos %}
-                <div class="rounded-lg border border-slate-200 p-3">
+                <div class="rounded-lg border border-sky-300/20 bg-slate-950 p-3">
                     <div class="flex gap-3">
-                        <div class="h-20 w-24 shrink-0 overflow-hidden rounded-lg bg-slate-200">
+                        <div class="h-20 w-24 shrink-0 overflow-hidden rounded-lg bg-slate-800">
                             {% with foto=espaco.imagens.first %}
                             {% if foto %}
                             <img src="{{ foto.imagem.url }}" alt="{{ espaco.nome }}" class="h-full w-full object-cover">
@@ -96,16 +97,16 @@
                             {% endwith %}
                         </div>
                         <div class="min-w-0 flex-1">
-                            <p class="font-bold">{{ espaco.nome }}</p>
-                            <p class="text-sm text-slate-600">{{ espaco.endereco }}</p>
+                            <p class="font-bold text-white">{{ espaco.nome }}</p>
+                            <p class="text-sm text-slate-300">{{ espaco.endereco }}</p>
                             {% if espaco.imagens.count %}
-                            <p class="mt-1 text-xs text-slate-500">{{ espaco.imagens.count }} imagem(ns)</p>
+                            <p class="mt-1 text-xs text-slate-400">{{ espaco.imagens.count }} imagem(ns)</p>
                             {% else %}
-                            <p class="mt-1 text-xs text-slate-500">Imagens padrao</p>
+                            <p class="mt-1 text-xs text-slate-400">Imagens padrao</p>
                             {% endif %}
 
                             <div class="mt-3 flex flex-wrap gap-2">
-                                <button type="button" data-editar="editar-espaco-{{ espaco.id }}" class="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium hover:bg-slate-50">
+                                <button type="button" data-editar="editar-espaco-{{ espaco.id }}" class="rounded-lg border border-sky-300/40 px-3 py-2 text-sm font-semibold text-sky-100 hover:bg-sky-400/10">
                                     Editar
                                 </button>
 
@@ -113,7 +114,7 @@
                                     {% csrf_token %}
                                     <input type="hidden" name="acao" value="apagar_espaco">
                                     <input type="hidden" name="espaco_id" value="{{ espaco.id }}">
-                                    <button type="submit" class="rounded-lg border border-red-300 px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-50">
+                                    <button type="submit" class="rounded-lg border border-red-300/40 px-3 py-2 text-sm font-semibold text-red-200 hover:bg-red-950/70">
                                         Apagar
                                     </button>
                                 </form>
@@ -121,27 +122,27 @@
                         </div>
                     </div>
 
-                    <form id="editar-espaco-{{ espaco.id }}" method="POST" enctype="multipart/form-data" class="mt-4 hidden space-y-3 rounded-lg bg-slate-50 p-3">
+                    <form id="editar-espaco-{{ espaco.id }}" method="POST" enctype="multipart/form-data" class="mt-4 hidden space-y-3 rounded-lg border border-sky-200/20 bg-slate-900 p-3">
                         {% csrf_token %}
                         <input type="hidden" name="acao" value="editar_espaco">
                         <input type="hidden" name="espaco_id" value="{{ espaco.id }}">
 
                         <input type="text" name="nome" value="{{ espaco.nome }}" required
-                            class="h-11 w-full rounded-lg border border-slate-300 px-4 outline-none focus:border-slate-700">
+                            class="h-11 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 text-slate-100 outline-none focus:border-sky-300">
 
                         <input type="text" name="endereco" value="{{ espaco.endereco }}" required
-                            class="h-11 w-full rounded-lg border border-slate-300 px-4 outline-none focus:border-slate-700">
+                            class="h-11 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 text-slate-100 outline-none focus:border-sky-300">
 
                         <textarea name="descricao" required
-                            class="h-28 w-full rounded-lg border border-slate-300 px-4 py-3 outline-none focus:border-slate-700">{{ espaco.descricao }}</textarea>
+                            class="h-28 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none focus:border-sky-300">{{ espaco.descricao }}</textarea>
 
                         <div>
-                            <label class="mb-2 block text-sm font-semibold text-slate-700">Trocar foto</label>
+                            <label class="mb-2 block text-sm font-semibold text-sky-100">Trocar foto</label>
                             <input type="file" name="imagens" accept="image/*" multiple
-                                class="block w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-900 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-slate-700">
+                                class="block w-full text-sm text-slate-300 file:mr-3 file:rounded-lg file:border-0 file:bg-sky-400 file:px-4 file:py-2 file:text-sm file:font-bold file:text-slate-950 hover:file:bg-sky-300">
                         </div>
 
-                        <button type="submit" class="rounded-lg bg-slate-900 px-5 py-3 text-sm font-semibold text-white hover:bg-slate-700">
+                        <button type="submit" class="rounded-lg bg-sky-400 px-5 py-3 text-sm font-bold text-slate-950 hover:bg-sky-300">
                             Salvar alteracoes
                         </button>
                     </form>
@@ -149,31 +150,30 @@
                 {% endfor %}
             </div>
             {% else %}
-            <p class="text-sm text-slate-500">Nenhum espaco cadastrado.</p>
+            <p class="text-sm text-slate-400">Nenhum espaco cadastrado.</p>
             {% endif %}
         </section>
 
-        <section id="reservados" class="hidden rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 class="mb-4 text-xl font-bold">Espaços Reservados</h2>
+        <section id="reservados" class="hidden rounded-lg border border-sky-200/30 bg-slate-900 p-5 shadow-xl shadow-slate-950/30">
+            <h2 class="mb-4 text-xl font-bold text-white">Espacos Reservados</h2>
 
             {% if alugueis %}
             <div class="space-y-3">
                 {% for aluguel in alugueis %}
-                <div class="rounded-lg border border-slate-200 p-4">
+                <div class="rounded-lg border border-sky-300/20 bg-slate-950 p-4">
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                            <p><strong>Espaço:</strong> {{ aluguel.espaco.nome }}</p>
-                            <p><strong>Cliente:</strong> {{ aluguel.usuario.nome }}</p>
-                            <p><strong>Dia:</strong> {{ aluguel.dia }}</p>
-                            <p><strong>Duração:</strong> {{ aluguel.duracao }}</p>
-                            <p><strong>Horários:</strong> {{ aluguel.horarios }}</p>
+                        <div class="space-y-1 text-sm text-slate-300">
+                            <p><strong class="text-sky-100">Espaco:</strong> {{ aluguel.espaco.nome }}</p>
+                            <p><strong class="text-sky-100">Cliente:</strong> {{ aluguel.usuario.nome }}</p>
+                            <p><strong class="text-sky-100">Dia:</strong> {{ aluguel.dia }}</p>
+                            <p><strong class="text-sky-100">Horario:</strong> {{ aluguel.horario_formatado }}</p>
                         </div>
 
                         <form method="POST">
                             {% csrf_token %}
                             <input type="hidden" name="acao" value="cancelar">
                             <input type="hidden" name="aluguel_id" value="{{ aluguel.id }}">
-                            <button type="submit" class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-50">
+                            <button type="submit" class="rounded-lg border border-sky-300/40 px-4 py-2 text-sm font-semibold text-sky-100 hover:bg-sky-400/10">
                                 Cancelar
                             </button>
                         </form>
@@ -182,25 +182,25 @@
                 {% endfor %}
             </div>
             {% else %}
-            <p class="text-sm text-slate-500">Nenhum aluguel cadastrado.</p>
+            <p class="text-sm text-slate-400">Nenhum aluguel cadastrado.</p>
             {% endif %}
         </section>
 
-        <section id="clientes" class="hidden rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-            <h2 class="mb-4 text-xl font-bold">Clientes</h2>
+        <section id="clientes" class="hidden rounded-lg border border-sky-200/30 bg-slate-900 p-5 shadow-xl shadow-slate-950/30">
+            <h2 class="mb-4 text-xl font-bold text-white">Clientes</h2>
 
             {% if usuarios %}
             <div class="grid gap-3 sm:grid-cols-2">
                 {% for usuario in usuarios %}
-                <div class="rounded-lg border border-slate-200 p-4">
-                    <p><strong>Nome:</strong> {{ usuario.nome }}</p>
-                    <p><strong>Email:</strong> {{ usuario.email }}</p>
-                    <p><strong>Cadastrado em:</strong> {{ usuario.criado_em|date:"d/m/Y H:i" }}</p>
+                <div class="rounded-lg border border-sky-300/20 bg-slate-950 p-4 text-sm text-slate-300">
+                    <p><strong class="text-sky-100">Nome:</strong> {{ usuario.nome }}</p>
+                    <p><strong class="text-sky-100">Email:</strong> {{ usuario.email }}</p>
+                    <p><strong class="text-sky-100">Cadastrado em:</strong> {{ usuario.criado_em|date:"d/m/Y H:i" }}</p>
                 </div>
                 {% endfor %}
             </div>
             {% else %}
-            <p class="text-sm text-slate-500">Nenhum usuário cadastrado.</p>
+            <p class="text-sm text-slate-400">Nenhum usuario cadastrado.</p>
             {% endif %}
         </section>
 
@@ -212,23 +212,35 @@
         let cadastroEspaco = document.getElementById("cadastro-espaco")
         let inputImagens = document.getElementById("imagens")
         let previewImagens = document.getElementById("preview-imagens")
+        let botoesAbas = document.querySelectorAll(".aba")
 
-        function mostrar(secao) {
+        function ativarBotao(botaoAtivo) {
+            botoesAbas.forEach(function (botao) {
+                botao.classList.remove("border-sky-300", "bg-sky-400", "font-bold", "text-slate-950", "shadow-lg", "shadow-sky-500/20")
+                botao.classList.add("border-sky-300/30", "bg-slate-900", "font-semibold", "text-sky-100", "shadow-sm")
+            })
+
+            botaoAtivo.classList.remove("border-sky-300/30", "bg-slate-900", "font-semibold", "text-sky-100", "shadow-sm")
+            botaoAtivo.classList.add("border-sky-300", "bg-sky-400", "font-bold", "text-slate-950", "shadow-lg", "shadow-sky-500/20")
+        }
+
+        function mostrar(secao, botao) {
             cadastroEspaco.classList.toggle("hidden", secao !== cadastroEspaco)
             reservados.classList.toggle("hidden", secao !== reservados)
             clientes.classList.toggle("hidden", secao !== clientes)
+            ativarBotao(botao)
         }
 
         document.getElementById("btn-reservados").addEventListener("click", function () {
-            mostrar(reservados)
+            mostrar(reservados, this)
         })
 
         document.getElementById("btn-clientes").addEventListener("click", function () {
-            mostrar(clientes)
+            mostrar(clientes, this)
         })
 
         document.getElementById("btn-cadastrar").addEventListener("click", function () {
-            mostrar(cadastroEspaco)
+            mostrar(cadastroEspaco, this)
         })
 
         document.querySelectorAll("[data-editar]").forEach(function (botao) {

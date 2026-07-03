@@ -55,9 +55,15 @@ class Aluguel(models.Model):
     usuario = models.ForeignKey('Usuario', on_delete=models.SET_NULL, null=True, blank=True)
     espaco = models.ForeignKey('Espaco', on_delete=models.SET_NULL, null=True, blank=True)
     dia = models.CharField(max_length=20)
-    duracao = models.CharField(max_length=20)
     horarios = models.CharField(max_length=200)
     criado_em = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def horario_formatado(self):
+        horarios = [hora.strip() for hora in self.horarios.split(',') if hora.strip()]
+        if len(horarios) <= 1:
+            return self.horarios
+        return f'{horarios[0]} - {horarios[-1]}'
 
     def __str__(self):
         return f"Aluguel em {self.dia}"
