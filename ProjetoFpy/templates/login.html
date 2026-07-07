@@ -12,7 +12,6 @@
 
     <main class="w-full max-w-md rounded-lg border border-sky-200/30 bg-slate-900 p-8 shadow-xl shadow-slate-950/40">
 
-        <p class="text-center text-xs font-bold uppercase tracking-wide text-sky-300">Dubai Eventos</p>
         <h1 class="mt-2 text-center text-4xl font-bold text-white">
             PartySpace
         </h1>
@@ -21,7 +20,8 @@
         {% if messages %}
         <div class="mt-6 space-y-2">
             {% for message in messages %}
-            <div class="rounded-lg border px-4 py-3 text-sm {% if message.tags == 'success' %}border-sky-300/40 bg-sky-400/10 text-sky-100{% else %}border-red-300/40 bg-red-950/70 text-red-100{% endif %}">
+            <div
+                class="rounded-lg border px-4 py-3 text-sm {% if message.tags == 'success' %}border-sky-300/40 bg-sky-400/10 text-sky-100{% else %}border-red-300/40 bg-red-950/70 text-red-100{% endif %}">
                 {{ message }}
             </div>
             {% endfor %}
@@ -43,7 +43,8 @@
                     class="h-12 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 text-slate-100 outline-none focus:border-sky-300">
             </div>
 
-            <button type="submit" class="w-full rounded-lg bg-sky-400 px-8 py-3 text-sm font-bold uppercase text-slate-950 shadow-lg shadow-sky-500/20 hover:bg-sky-300">
+            <button type="submit"
+                class="w-full rounded-lg bg-sky-400 px-8 py-3 text-sm font-bold uppercase text-slate-950 shadow-lg shadow-sky-500/20 hover:bg-sky-300">
                 Entrar
             </button>
         </form>

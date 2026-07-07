@@ -2,6 +2,18 @@
 {% block content %}
 {% load static %}
 
+<style>
+    #dia {
+        color-scheme: dark;
+    }
+
+    #dia::-webkit-calendar-picker-indicator {
+        cursor: pointer;
+        filter: invert(78%) sepia(55%) saturate(1110%) hue-rotate(174deg) brightness(100%) contrast(95%);
+        opacity: 1;
+    }
+</style>
+
 <main class="mx-auto max-w-5xl">
     <a href="{% url 'descricao' %}?espaco={{ espaco.id }}" class="inline-flex rounded-lg border border-sky-300 bg-slate-950 px-5 py-2 text-sm font-semibold text-sky-100 shadow-sm hover:bg-slate-900">
         Voltar
