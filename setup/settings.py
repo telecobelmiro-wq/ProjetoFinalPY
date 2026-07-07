@@ -15,6 +15,13 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+STATIC_URL = '/static/'
+
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+STATICFILES_DIRS = [
+    BASE_DIR / 'ProjetoFpy' / 'static',
+]
 
 load_dotenv(BASE_DIR / ".env")
 
@@ -132,7 +139,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
@@ -144,3 +150,5 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     ".onrender.com",
 ]
+
+
