@@ -15,23 +15,25 @@ HORARIOS = [f'{hora:02d}:00' for hora in range(1, 24)] + ['00:00']
 ESPACO_PADRAO_CHAVE = 'espaco_padrao_criado'
 
 
-desc_dubai = (
-    'Localizado em Santa Cruz do Sul, o Dubai Eventos oferece uma estrutura moderna e completa para receber eventos '
+desc_partyspace = (
+    'Localizado em Santa Cruz do Sul, o PartySpace oferece uma estrutura moderna e completa para receber eventos '
     'de diferentes formatos e tamanhos. O espaco combina elegancia, conforto e funcionalidade, proporcionando o '
     'ambiente perfeito para celebracoes inesqueciveis. Com atendimento personalizado e uma estrutura preparada para '
-    'receber seus convidados, o Dubai Eventos e a escolha ideal para quem busca qualidade e excelencia em cada ocasiao.'
+    'receber seus convidados, o PartySpace e a escolha ideal para quem busca qualidade e excelencia em cada ocasiao.'
 )
 
 
 def cria_espaco():
     _, criado = Configuracao.objects.get_or_create(chave=ESPACO_PADRAO_CHAVE)
+    Espaco.objects.filter(nome='Dubai Eventos').update(nome='PartySpace', descricao=desc_partyspace)
+
     if not criado or Espaco.objects.exists():
         return
 
     Espaco.objects.create(
-        nome='Dubai Eventos',
+        nome='PartySpace',
         endereco='R. Barao do Arroio Grande, 599 - Lot. Vila Nova, Santa Cruz do Sul - RS, 96835-213',
-        descricao=desc_dubai,
+        descricao=desc_partyspace,
         imagem1='ProjetoFpy/img/dubaieventos.jpg',
         imagem2='ProjetoFpy/img/dubaiinterno.jpg',
         imagem3='ProjetoFpy/img/palcodubai.webp',
