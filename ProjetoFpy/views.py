@@ -30,9 +30,7 @@ def cria_espaco():
     if nome_corrigido:
         Espaco.objects.filter(
             nome='PartySpace',
-            imagem1='ProjetoFpy/img/dubaieventos.jpg',
-            imagem2='ProjetoFpy/img/dubaiinterno.jpg',
-            imagem3='ProjetoFpy/img/palcodubai.webp',
+        
         ).update(
             nome='Dubai Eventos',
             endereco=ESPACO_PADRAO_ENDERECO,
@@ -48,9 +46,7 @@ def cria_espaco():
         nome='Dubai Eventos',
         endereco=ESPACO_PADRAO_ENDERECO,
         descricao=desc_dubai_eventos,
-        imagem1='ProjetoFpy/img/dubaieventos.jpg',
-        imagem2='ProjetoFpy/img/dubaiinterno.jpg',
-        imagem3='ProjetoFpy/img/palcodubai.webp',
+
     )
 
 
@@ -88,12 +84,6 @@ def email_eh_valido(email):
         return False
     return True
 
-
-def imagens_invalidas(imagens):
-    return [
-        imagem.name for imagem in imagens
-        if not imagem.content_type.startswith('image/')
-    ]
 
 
 def tela_inicial(request):
@@ -161,11 +151,6 @@ def painel_admin(request):
                 messages.error(request, 'Preencha nome, endereço e descrição do espaço.')
                 return redirect('painel_admin')
 
-            nomes_invalidos = imagens_invalidas(imagens)
-            if nomes_invalidos:
-                messages.error(request, 'Envie apenas arquivos de imagem.')
-                return redirect('painel_admin')
-
             espaco.nome = nome
             espaco.endereco = endereco
             espaco.descricao = descricao
@@ -190,11 +175,6 @@ def painel_admin(request):
 
         if not imagens:
             messages.error(request, 'Envie pelo menos uma imagem do espaço.')
-            return redirect('painel_admin')
-
-        nomes_invalidos = imagens_invalidas(imagens)
-        if nomes_invalidos:
-            messages.error(request, 'Envie apenas arquivos de imagem.')
             return redirect('painel_admin')
 
         espaco = Espaco.objects.create(

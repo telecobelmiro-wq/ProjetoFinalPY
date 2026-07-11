@@ -13,7 +13,8 @@
 
     <main class="mx-auto max-w-5xl">
 
-        <header class="mb-6 flex flex-col gap-4 rounded-lg border border-sky-200/30 bg-slate-900 p-5 shadow-xl shadow-slate-950/30 sm:flex-row sm:items-center sm:justify-between">
+        <header
+            class="mb-6 flex flex-col gap-4 rounded-lg border border-sky-200/30 bg-slate-900 p-5 shadow-xl shadow-slate-950/30 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <p class="mb-1 text-xs font-bold uppercase tracking-wide text-sky-300">PartySpace</p>
                 <h1 class="text-3xl font-bold text-white">PartySpace</h1>
@@ -21,8 +22,11 @@
             </div>
 
             <div class="flex items-center gap-3">
-                <span class="rounded-full border border-sky-300/30 bg-sky-400/10 px-4 py-2 text-sm font-semibold text-sky-100">{{ usuario_nome }}</span>
-                <a href="{% url 'sair' %}" class="rounded-lg border border-sky-300/40 px-4 py-2 text-sm font-semibold text-sky-100 hover:bg-sky-400/10">
+                <span
+                    class="rounded-full border border-sky-300/30 bg-sky-400/10 px-4 py-2 text-sm font-semibold text-sky-100">{{
+                    usuario_nome }}</span>
+                <a href="{% url 'sair' %}"
+                    class="rounded-lg border border-sky-300/40 px-4 py-2 text-sm font-semibold text-sky-100 hover:bg-sky-400/10">
                     Sair
                 </a>
             </div>
@@ -31,7 +35,8 @@
         {% if messages %}
         <div class="mb-5 space-y-2">
             {% for message in messages %}
-            <div class="rounded-lg border px-4 py-3 text-sm {% if message.tags == 'success' %}border-sky-300/40 bg-sky-400/10 text-sky-100{% else %}border-red-300/40 bg-red-950/70 text-red-100{% endif %}">
+            <div
+                class="rounded-lg border px-4 py-3 text-sm {% if message.tags == 'success' %}border-sky-300/40 bg-sky-400/10 text-sky-100{% else %}border-red-300/40 bg-red-950/70 text-red-100{% endif %}">
                 {{ message }}
             </div>
             {% endfor %}
@@ -56,9 +61,10 @@
                         <div class="aspect-[16/10] bg-slate-800">
                             {% with foto=espaco.imagens.first %}
                             {% if foto %}
-                            <img src="{{ foto.imagem.url }}" alt="{{ espaco.nome }}" class="h-full w-full object-cover">
+                            <img src="{{ foto.imagem }}" alt="{{ espaco.nome }}" class="h-full w-full object-cover">
                             {% elif espaco.imagem_capa_padrao %}
-                            <img src="{% static espaco.imagem_capa_padrao %}" alt="{{ espaco.nome }}" class="h-full w-full object-cover">
+                            <img src="{{ espaco.imagem_capa_padrao }}" alt="{{ espaco.nome }}"
+                                class="h-full w-full object-cover">
                             {% endif %}
                             {% endwith %}
                         </div>
@@ -66,11 +72,13 @@
                             <div class="mb-3 flex items-start justify-between gap-3">
                                 <p class="font-bold text-white">{{ espaco.nome }}</p>
                                 {% if espaco.id in alugados %}
-                                <span class="shrink-0 rounded-full border border-amber-300/30 bg-amber-400/10 px-3 py-1 text-xs font-semibold text-amber-200">
+                                <span
+                                    class="shrink-0 rounded-full border border-amber-300/30 bg-amber-400/10 px-3 py-1 text-xs font-semibold text-amber-200">
                                     Reservado
                                 </span>
                                 {% else %}
-                                <span class="shrink-0 rounded-full border border-sky-300/40 bg-sky-400/10 px-3 py-1 text-xs font-semibold text-sky-100">
+                                <span
+                                    class="shrink-0 rounded-full border border-sky-300/40 bg-sky-400/10 px-3 py-1 text-xs font-semibold text-sky-100">
                                     Disponivel
                                 </span>
                                 {% endif %}

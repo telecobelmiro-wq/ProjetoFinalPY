@@ -33,7 +33,7 @@ def env_bool(name, default=False):
 SECRET_KEY = 'django-insecure-c0k*ypx@#%l%pdrrr33&tp64mqv6muscc&fp!m-*izf5w^=6#-'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env_bool("DEBUG", False)
+DEBUG = env_bool("DEBUG", True)
 
 ALLOWED_HOSTS = [
     host.strip()
