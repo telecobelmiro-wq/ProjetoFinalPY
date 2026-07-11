@@ -13,27 +13,41 @@ HORARIOS = [f'{hora:02d}:00' for hora in range(1, 24)] + ['00:00']
 
 
 ESPACO_PADRAO_CHAVE = 'espaco_padrao_criado'
+ESPACO_PADRAO_NOME_CORRIGIDO_CHAVE = 'espaco_padrao_nome_corrigido'
+ESPACO_PADRAO_ENDERECO = 'R. Barão do Arroio Grande, 599 - Lot. Vila Nova, Santa Cruz do Sul - RS, 96835-213'
 
 
-desc_partyspace = (
-    'Localizado em Santa Cruz do Sul, o PartySpace oferece uma estrutura moderna e completa para receber eventos '
-    'de diferentes formatos e tamanhos. O espaco combina elegancia, conforto e funcionalidade, proporcionando o '
-    'ambiente perfeito para celebracoes inesqueciveis. Com atendimento personalizado e uma estrutura preparada para '
-    'receber seus convidados, o PartySpace e a escolha ideal para quem busca qualidade e excelencia em cada ocasiao.'
+desc_dubai_eventos = (
+    'Localizado em Santa Cruz do Sul, o Dubai Eventos oferece uma estrutura moderna e completa para receber eventos '
+    'de diferentes formatos e tamanhos. O espaço combina elegância, conforto e funcionalidade, proporcionando o '
+    'ambiente perfeito para celebrações inesquecíveis. Com atendimento personalizado e uma estrutura preparada para '
+    'receber seus convidados, o Dubai Eventos é a escolha ideal para quem busca qualidade e excelência em cada ocasião.'
 )
 
 
 def cria_espaco():
+    _, nome_corrigido = Configuracao.objects.get_or_create(chave=ESPACO_PADRAO_NOME_CORRIGIDO_CHAVE)
+    if nome_corrigido:
+        Espaco.objects.filter(
+            nome='PartySpace',
+            imagem1='ProjetoFpy/img/dubaieventos.jpg',
+            imagem2='ProjetoFpy/img/dubaiinterno.jpg',
+            imagem3='ProjetoFpy/img/palcodubai.webp',
+        ).update(
+            nome='Dubai Eventos',
+            endereco=ESPACO_PADRAO_ENDERECO,
+            descricao=desc_dubai_eventos,
+        )
+
     _, criado = Configuracao.objects.get_or_create(chave=ESPACO_PADRAO_CHAVE)
-    Espaco.objects.filter(nome='Dubai Eventos').update(nome='PartySpace', descricao=desc_partyspace)
 
     if not criado or Espaco.objects.exists():
         return
 
     Espaco.objects.create(
-        nome='PartySpace',
-        endereco='R. Barao do Arroio Grande, 599 - Lot. Vila Nova, Santa Cruz do Sul - RS, 96835-213',
-        descricao=desc_partyspace,
+        nome='Dubai Eventos',
+        endereco=ESPACO_PADRAO_ENDERECO,
+        descricao=desc_dubai_eventos,
         imagem1='ProjetoFpy/img/dubaieventos.jpg',
         imagem2='ProjetoFpy/img/dubaiinterno.jpg',
         imagem3='ProjetoFpy/img/palcodubai.webp',
@@ -125,10 +139,10 @@ def painel_admin(request):
             espaco = Espaco.objects.filter(id=request.POST.get('espaco_id')).first()
 
             if not espaco:
-                messages.error(request, 'Espaco nao encontrado.')
+                messages.error(request, 'Espaço não encontrado.')
             else:
                 espaco.delete()
-                messages.success(request, 'Espaco apagado com sucesso.')
+                messages.success(request, 'Espaço apagado com sucesso.')
 
             return redirect('painel_admin')
 
@@ -140,11 +154,11 @@ def painel_admin(request):
             imagens = request.FILES.getlist('imagens')
 
             if not espaco:
-                messages.error(request, 'Espaco nao encontrado.')
+                messages.error(request, 'Espaço não encontrado.')
                 return redirect('painel_admin')
 
             if not nome or not endereco or not descricao:
-                messages.error(request, 'Preencha nome, endereco e descricao do espaco.')
+                messages.error(request, 'Preencha nome, endereço e descrição do espaço.')
                 return redirect('painel_admin')
 
             nomes_invalidos = imagens_invalidas(imagens)
@@ -162,7 +176,7 @@ def painel_admin(request):
                 for imagem in imagens:
                     EspacoImagem.objects.create(espaco=espaco, imagem=imagem)
 
-            messages.success(request, 'Espaco atualizado com sucesso.')
+            messages.success(request, 'Espaço atualizado com sucesso.')
             return redirect('painel_admin')
 
         nome = request.POST.get('nome', '').strip()
@@ -171,11 +185,11 @@ def painel_admin(request):
         imagens = request.FILES.getlist('imagens')
 
         if not nome or not endereco or not descricao:
-            messages.error(request, 'Preencha nome, endereco e descricao do espaco.')
+            messages.error(request, 'Preencha nome, endereço e descrição do espaço.')
             return redirect('painel_admin')
 
         if not imagens:
-            messages.error(request, 'Envie pelo menos uma imagem do espaco.')
+            messages.error(request, 'Envie pelo menos uma imagem do espaço.')
             return redirect('painel_admin')
 
         nomes_invalidos = imagens_invalidas(imagens)
@@ -191,7 +205,7 @@ def painel_admin(request):
         for imagem in imagens:
             EspacoImagem.objects.create(espaco=espaco, imagem=imagem)
 
-        messages.success(request, 'Espaco cadastrado com sucesso.')
+        messages.success(request, 'Espaço cadastrado com sucesso.')
         return redirect('painel_admin')
 
     cria_espaco()
@@ -230,7 +244,7 @@ def login_view(request):
                 request.session['usuario_nome'] = u.nome
                 return redirect('tela_inicial')
 
-            messages.error(request, "Email ou senha invalidos.")
+            messages.error(request, "Email ou senha inválidos.")
 
     return render(request, 'login.html', {'email': email})
 
@@ -314,7 +328,7 @@ def horario_reserva_valido(horarios):
 def disponibilidade_view(request):
     usuario = get_usuario_logado(request)
     if not usuario:
-        messages.error(request, 'Faca login para reservar um espaco.')
+        messages.error(request, 'Faça login para reservar um espaço.')
         return redirect('login')
 
     if request.method == 'POST':
@@ -325,7 +339,7 @@ def disponibilidade_view(request):
         horarios_lista = horario_reserva_valido(horarios.split(','))
 
         if not espaco:
-            messages.error(request, 'Nao foi possivel encontrar o espaco.')
+            messages.error(request, 'Não foi possível encontrar o espaço.')
             return redirect('tela_inicial')
 
         if not dia:
@@ -333,22 +347,22 @@ def disponibilidade_view(request):
             return redirect(f'/disponibilidade/?espaco={espaco.id}')
 
         if not horarios_lista:
-            messages.error(request, 'Escolha horarios seguidos, sem intervalos entre eles.')
+            messages.error(request, 'Escolha horários seguidos, sem intervalos entre eles.')
             return redirect(f'/disponibilidade/?espaco={espaco.id}')
 
         if not data_reserva:
-            messages.error(request, 'Escolha uma data valida.')
+            messages.error(request, 'Escolha uma data válida.')
             return redirect(f'/disponibilidade/?espaco={espaco.id}')
 
         if data_reserva < timezone.localdate():
-            messages.error(request, 'Nao e possivel reservar em dias que ja passaram.')
+            messages.error(request, 'Não é possível reservar em dias que já passaram.')
             return redirect(f'/disponibilidade/?espaco={espaco.id}')
 
         ocupados = pega_horarios_ocupados(espaco, dia)
         conflito = [hora for hora in horarios_lista if hora in ocupados]
 
         if conflito:
-            messages.error(request, 'Este horario ja esta reservado: ' + ', '.join(conflito))
+            messages.error(request, 'Este horário já está reservado: ' + ', '.join(conflito))
             return redirect(f'/disponibilidade/?espaco={espaco.id}&dia={dia}')
 
         Aluguel.objects.create(
@@ -384,7 +398,7 @@ def cancelar_aluguel_view(request, aluguel_id):
     aluguel = Aluguel.objects.filter(id=aluguel_id).select_related('usuario').first()
 
     if not aluguel:
-        messages.error(request, 'Reserva nao encontrada.')
+        messages.error(request, 'Reserva não encontrada.')
         return redirect('tela_inicial')
 
     usuario = get_usuario_logado(request)
@@ -394,7 +408,7 @@ def cancelar_aluguel_view(request, aluguel_id):
         aluguel.delete()
         messages.success(request, 'Reserva cancelada com sucesso.')
     else:
-        messages.error(request, 'Voce nao tem permissao para cancelar esta reserva.')
+        messages.error(request, 'Você não tem permissão para cancelar esta reserva.')
 
     if admin_logado:
         return redirect('painel_admin')
@@ -411,16 +425,16 @@ def cadastro_view(request):
         if not nome or not email or not senha or not confirmar:
             messages.error(request, "Preencha todos os campos.")
         elif senha != confirmar:
-            messages.error(request, "As senhas nao coincidem!")
+            messages.error(request, "As senhas não coincidem!")
         elif not email_eh_valido(email):
-            messages.error(request, "Email invalido.")
+            messages.error(request, "Email inválido.")
         elif Usuario.objects.filter(email__iexact=email).exists():
-            messages.error(request, "Email ja cadastrado.")
+            messages.error(request, "Email já cadastrado.")
         elif Usuario.objects.filter(nome__iexact=nome).exists():
-            messages.error(request, "Nome ja cadastrado. Use outro nome ou entre pelo email.")
+            messages.error(request, "Nome já cadastrado. Use outro nome ou entre pelo email.")
         else:
             Usuario.objects.create(nome=nome, email=email, senha=make_password(senha))
-            messages.success(request, "Cadastro realizado. Agora voce ja pode entrar.")
+            messages.success(request, "Cadastro realizado. Agora você já pode entrar.")
             return redirect('login')
 
     return render(request, 'cadastro.html')
