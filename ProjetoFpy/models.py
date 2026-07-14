@@ -42,7 +42,7 @@ class Espaco(models.Model):
 
 class EspacoImagem(models.Model):
     espaco = models.ForeignKey(Espaco, on_delete=models.CASCADE, related_name='imagens')
-    imagem = models.FileField(upload_to='espacos/')
+    imagem = models.CharField(max_length=1255)
     criado_em = models.DateTimeField(auto_now_add=True)
 
     class Meta:

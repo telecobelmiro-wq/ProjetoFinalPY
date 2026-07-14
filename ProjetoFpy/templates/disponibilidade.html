@@ -51,7 +51,7 @@
                 <div class="carousel-inner">
                     {% for imagem in espaco.imagens_padrao %}
                     <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                        <img src="{% imagem %}" alt="{{ espaco.nome }}" class="d-block h-64 w-100 object-cover">
+                        <img src="{{ imagem }}" alt="{{ espaco.nome }}" class="d-block h-64 w-100 object-cover">
                     </div>
                     {% endfor %}
                 </div>

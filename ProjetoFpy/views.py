@@ -141,7 +141,7 @@ def painel_admin(request):
             nome = request.POST.get('nome', '').strip()
             endereco = request.POST.get('endereco', '').strip()
             descricao = request.POST.get('descricao', '').strip()
-            imagens = request.FILES.getlist('imagens')
+            imagens = request.POST.get('imagens')
 
             if not espaco:
                 messages.error(request, 'Espaço não encontrado.')
@@ -157,9 +157,8 @@ def painel_admin(request):
             espaco.save()
 
             if imagens:
-                espaco.imagens.all().delete()
-                for imagem in imagens:
-                    EspacoImagem.objects.create(espaco=espaco, imagem=imagem)
+            
+                EspacoImagem.objects.create(espaco=espaco, imagem=imagens)
 
             messages.success(request, 'Espaço atualizado com sucesso.')
             return redirect('painel_admin')
@@ -167,7 +166,7 @@ def painel_admin(request):
         nome = request.POST.get('nome', '').strip()
         endereco = request.POST.get('endereco', '').strip()
         descricao = request.POST.get('descricao', '').strip()
-        imagens = request.FILES.getlist('imagens')
+        imagens = request.POST.get('imagens')
 
         if not nome or not endereco or not descricao:
             messages.error(request, 'Preencha nome, endereço e descrição do espaço.')
@@ -182,8 +181,8 @@ def painel_admin(request):
             endereco=endereco,
             descricao=descricao,
         )
-        for imagem in imagens:
-            EspacoImagem.objects.create(espaco=espaco, imagem=imagem)
+        
+        EspacoImagem.objects.create(espaco=espaco, imagem=imagens)
 
         messages.success(request, 'Espaço cadastrado com sucesso.')
         return redirect('painel_admin')
