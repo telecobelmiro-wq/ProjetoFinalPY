@@ -44,8 +44,11 @@
         {% endif %}
 
         <section class="mb-6 rounded-lg border border-sky-200/20 bg-slate-900 p-5 shadow-lg shadow-slate-950/20">
-            <label for="filtro" class="mb-2 block text-sm font-semibold text-sky-100">Filtrar por endereco</label>
-            <input id="filtro" type="text" placeholder="Digite um endereco"
+            <label for="filtro" class="mb-2 block text-sm font-semibold text-sky-100">
+                Filtrar por nome do local
+            </label>
+
+            <input id="filtro" type="text" placeholder="Digite o nome do local"
                 class="h-11 w-full rounded-lg border border-slate-700 bg-slate-950 px-4 text-slate-100 outline-none placeholder:text-slate-500 focus:border-sky-300">
         </section>
 
@@ -57,7 +60,7 @@
                     {% for espaco in espacos %}
                     <a href="{% url 'descricao' %}?espaco={{ espaco.id }}"
                         class="espaco-card overflow-hidden rounded-lg border border-slate-700 bg-slate-950 transition hover:-translate-y-0.5 hover:border-sky-300 hover:shadow-lg hover:shadow-sky-500/10"
-                        data-end="{{ espaco.endereco|lower }}">
+                        data-nome="{{ espaco.nome|lower }}">
                         <div class="aspect-[16/10] bg-slate-800">
                             {% with foto=espaco.imagens.first %}
                             {% if foto %}
@@ -121,12 +124,19 @@
     </main>
 
     <script>
-        document.getElementById('filtro').addEventListener('input', function () {
-            var val = this.value.toLowerCase()
-            document.querySelectorAll('.espaco-card').forEach(function (card) {
-                card.style.display = card.getAttribute('data-end').includes(val) ? '' : 'none'
-            })
-        })
+        const filtro = document.getElementById("filtro");
+        const cards = document.querySelectorAll(".espaco-card");
+
+        filtro.addEventListener("input", function () {
+            const texto = this.value.toLowerCase().trim();
+
+            cards.forEach(card => {
+                const nome = card.dataset.nome || "";
+
+                card.style.display =
+                    texto === "" || nome.includes(texto) ? "" : "none";
+            });
+        });
     </script>
 
 </body>

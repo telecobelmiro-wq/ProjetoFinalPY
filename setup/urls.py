@@ -15,6 +15,7 @@ urlpatterns = [
     path('disponibilidade/', views.disponibilidade_view, name='disponibilidade'),
     path('cancelar/<int:aluguel_id>/', views.cancelar_aluguel_view, name='cancelar_aluguel'),
     path('cadastro/', views.cadastro_view, name='cadastro'),
+    path("buscar/", views.buscar_espacos, name="buscar_espacos"),
 ]
 
 if settings.DEBUG:

@@ -1,5 +1,4 @@
 from datetime import date
-
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.hashers import check_password, make_password
@@ -7,7 +6,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.utils import timezone
 from .models import Usuario, Aluguel, Configuracao, Espaco, EspacoImagem
-
+from django.http import JsonResponse
 
 HORARIOS = [f'{hora:02d}:00' for hora in range(1, 24)] + ['00:00']
 
@@ -91,18 +90,22 @@ def tela_inicial(request):
         return redirect('painel_admin')
 
     cria_espaco()
+
     usuario = get_usuario_logado(request)
     if not usuario:
         return redirect('login')
 
     espacos = Espaco.objects.prefetch_related('imagens').all()
-    nome = usuario.nome if usuario else None
 
-    alugados = set()
-    meus_alugueis = []
-    if usuario:
-        meus_alugueis = Aluguel.objects.filter(usuario=usuario).select_related('espaco').order_by('-criado_em')
-        alugados = set(meus_alugueis.values_list('espaco_id', flat=True))
+    nome = usuario.nome
+
+    meus_alugueis = (
+        Aluguel.objects.filter(usuario=usuario)
+        .select_related('espaco')
+        .order_by('-criado_em')
+    )
+
+    alugados = set(meus_alugueis.values_list('espaco_id', flat=True))
 
     return render(request, 'home.html', {
         'usuario_nome': nome,
@@ -110,6 +113,22 @@ def tela_inicial(request):
         'alugados': alugados,
         'meus_alugueis': meus_alugueis,
     })
+
+
+def buscar_espacos(request):
+    busca = request.GET.get("q", "").strip()
+
+    espacos = Espaco.objects.filter(nome__icontains=busca)[:10]
+
+    dados = [
+        {
+            "id": espaco.id,
+            "nome": espaco.nome,
+        }
+        for espaco in espacos
+    ]
+
+    return JsonResponse(dados, safe=False)
 
 
 def painel_admin(request):
